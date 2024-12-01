@@ -1,0 +1,22 @@
+﻿@namespace TextileEditor.Web.Layout
+
+<div id="@($"TextileSessionViewMenu-{(Session?.Guid.ToString() ?? "NullReference")}")" style="margin: 2px;">
+    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
+        <FluentIcon Value="@(new Icons.Regular.Size16.GridKanban())" />
+        @if (renaming)
+        {
+            <FluentTextField @bind-Value=SessionName AriaLabel="No label"></FluentTextField>
+        }
+        else
+        {
+            @SessionName
+        }
+        <FluentSpacer />
+        <FluentButton IconStart="@(new Icons.Regular.Size16.Open())" Appearance="Appearance.Outline" OnClick="OpenSession" Disabled="IsOpenSession" />
+    </FluentStack>
+</div>
+
+<FluentMenu Anchor="@($"TextileSessionViewMenu-{(Session?.Guid.ToString() ?? "NullReference")}")" Trigger="MouseButton.Right" Anchored="false">
+    <FluentMenuItem Label="@(renaming ? Localizer[SharedResource.Cancel] : Localizer[SharedResource.Rename])" OnClick="Rename" />
+    <FluentMenuItem Label="@Localizer[SharedResource.Delete]" OnClick="Remove" />
+</FluentMenu>

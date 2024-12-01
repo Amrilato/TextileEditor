@@ -1,0 +1,29 @@
+﻿@namespace TextileEditor.Web.Layout
+@using System.Globalization
+@using Microsoft.Extensions.Localization
+@using TextileEditor.Web.Services
+@inject IStringLocalizer<SharedResource> Localizer
+@inject NavigationManager Navigation
+
+<FluentButton id="ViewMenuOpen" Disabled="open" Appearance="Appearance.Stealth" @onclick="@(() => open = !open)">
+    @Localizer[SharedResource.View]
+</FluentButton>
+
+<FluentMenu Anchor="ViewMenuOpen" @bind-Open="open" VerticalThreshold="170">
+    <FluentMenuItem OnClick="@(() => Navigation.NavigateTo(""))">
+        @Localizer[SharedResource.Home]
+    </FluentMenuItem>
+    <FluentMenuItem OnClick="@(() => Navigation.NavigateTo("edit"))" >
+        @Localizer[SharedResource.Edit]
+    </FluentMenuItem>
+    <FluentMenuItem OnClick="@(() => Navigation.NavigateTo("preview"))" >
+        @Localizer[SharedResource.Preview]
+    </FluentMenuItem>
+    <FluentMenuItem OnClick="@(() => Navigation.NavigateTo("config"))">
+        @Localizer[SharedResource.Config]
+    </FluentMenuItem>
+</FluentMenu>
+
+@code {
+    bool open = false;
+}
