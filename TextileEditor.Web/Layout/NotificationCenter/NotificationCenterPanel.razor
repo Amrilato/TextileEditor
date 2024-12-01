@@ -1,0 +1,25 @@
+﻿@namespace TextileEditor.Web.Layout
+@implements IDialogContentComponent<GlobalState>
+@inject IMessageService MessageService
+
+<div>
+
+    <FluentStack>
+        <FluentSpacer />
+        
+        <FluentAnchor Appearance="@Appearance.Hypertext" Href="" OnClick="@(e => MessageService.Clear(IMessageServiceExtensions.NotificationCenter) )">
+            Dismiss all
+        </FluentAnchor>
+    </FluentStack>
+
+    <br />
+
+    <FluentMessageBarProvider Section="@IMessageServiceExtensions.NotificationCenter"
+                        MaxMessageCount="-1"
+                        Type="@MessageType.Notification" />
+</div>
+
+@code {
+    [Parameter]
+    public GlobalState Content { get; set; } = default!;
+}

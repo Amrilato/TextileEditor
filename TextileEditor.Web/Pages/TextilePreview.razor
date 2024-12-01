@@ -1,0 +1,72 @@
+﻿@page "/preview"
+@using TextileEditor.Web.Components
+
+@if (TextileEditorContext is not null && TextilePreviewContext is not null)
+{
+    <FluentStack Style="height: 100%" Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Left" VerticalAlignment="VerticalAlignment.Top">
+        <FluentStack>
+            <FluentButton IconStart="@(new Icons.Regular.Size20.ArrowReset())" OnClick="TextilePreviewContext.Rerender" />
+            <FluentStack Orientation="Orientation.Vertical">
+                <FluentStack>
+                    <FluentSlider Label="@Localizer[SharedResource.SelectAHorizontalRepeat]" Min="1" Max="100" Step="1" @bind-Value=TextilePreviewContext.RepeatHorizontal>
+                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+                        <FluentSliderLabel Position="10">10</FluentSliderLabel>
+                        <FluentSliderLabel Position="20">20</FluentSliderLabel>
+                        <FluentSliderLabel Position="30">30</FluentSliderLabel>
+                        <FluentSliderLabel Position="40">40</FluentSliderLabel>
+                        <FluentSliderLabel Position="50">50</FluentSliderLabel>
+                        <FluentSliderLabel Position="60">60</FluentSliderLabel>
+                        <FluentSliderLabel Position="70">70</FluentSliderLabel>
+                        <FluentSliderLabel Position="80">80</FluentSliderLabel>
+                        <FluentSliderLabel Position="90">90</FluentSliderLabel>
+                        <FluentSliderLabel Position="100">100</FluentSliderLabel>
+                    </FluentSlider>
+                    <FluentSlider Label="@Localizer[SharedResource.SelectAVerticalRepeat]" Min="1" Max="100" Step="1" @bind-Value=TextilePreviewContext.RepeatVertical>
+                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+                        <FluentSliderLabel Position="10">10</FluentSliderLabel>
+                        <FluentSliderLabel Position="20">20</FluentSliderLabel>
+                        <FluentSliderLabel Position="30">30</FluentSliderLabel>
+                        <FluentSliderLabel Position="40">40</FluentSliderLabel>
+                        <FluentSliderLabel Position="50">50</FluentSliderLabel>
+                        <FluentSliderLabel Position="60">60</FluentSliderLabel>
+                        <FluentSliderLabel Position="70">70</FluentSliderLabel>
+                        <FluentSliderLabel Position="80">80</FluentSliderLabel>
+                        <FluentSliderLabel Position="90">90</FluentSliderLabel>
+                        <FluentSliderLabel Position="100">100</FluentSliderLabel>
+                    </FluentSlider>
+                </FluentStack>
+                <FluentStack>
+                    <FluentSlider Label="@Localizer[SharedResource.SelectAPixelWidth]" Min="1" Max="10" Step="1" @bind-Value=PixelSizeX>
+                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
+                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
+                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
+                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
+                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
+                        <FluentSliderLabel Position="7">7</FluentSliderLabel>
+                        <FluentSliderLabel Position="8">8</FluentSliderLabel>
+                        <FluentSliderLabel Position="9">9</FluentSliderLabel>
+                        <FluentSliderLabel Position="10">10</FluentSliderLabel>
+                    </FluentSlider>
+                    <FluentSlider Label="@Localizer[SharedResource.SelectAPixelHeight]" Min="1" Max="10" Step="1" @bind-Value=PixelSizeY>
+                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
+                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
+                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
+                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
+                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
+                        <FluentSliderLabel Position="7">7</FluentSliderLabel>
+                        <FluentSliderLabel Position="8">8</FluentSliderLabel>
+                        <FluentSliderLabel Position="9">9</FluentSliderLabel>
+                        <FluentSliderLabel Position="10">10</FluentSliderLabel>
+                    </FluentSlider>
+                </FluentStack>
+            </FluentStack>
+        </FluentStack>
+        <Canvas SKSurfacePainter="TextilePreviewContext.PreviewPainter" Size="TextilePreviewContext.CanvasSize" />
+    </FluentStack>
+}
+else
+{
+    
+}

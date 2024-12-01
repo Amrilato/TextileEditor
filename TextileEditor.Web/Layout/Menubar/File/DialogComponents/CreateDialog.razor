@@ -1,0 +1,31 @@
+﻿@namespace TextileEditor.Web.Layout
+@implements IDialogContentComponent<CreateDialogContent>
+
+
+<FluentGrid Spacing="3" AdaptiveRendering="true" Justify="JustifyContent.Center">
+    <FluentGridItem xs="12">
+        <FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center"> 
+            <FluentTextField @bind-Value="@Content.SessionName">Textile Name</FluentTextField>
+        </FluentStack>
+    </FluentGridItem>
+    <FluentGridItem xs="12" sm="6">
+        <FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center">
+            <FluentNumberField @bind-Value="@Content.TieupWidth" Label="Tieup Width" />
+        </FluentStack>
+    </FluentGridItem>
+    <FluentGridItem xs="12" sm="6">
+        <FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center">
+            <FluentNumberField @bind-Value="@Content.TieupHeight" Label="Tieup Height" />
+        </FluentStack>
+    </FluentGridItem>
+    <FluentGridItem xs="12" sm="6">
+        <FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center">
+            <FluentNumberField @bind-Value="@Content.TextileWidth" Label="Textile Width" />
+        </FluentStack>
+    </FluentGridItem>
+    <FluentGridItem xs="12" sm="6">
+        <FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center">
+            <FluentNumberField @bind-Value="@Content.TextileHeight" Label="Textile Height" />
+        </FluentStack>
+    </FluentGridItem>
+</FluentGrid>

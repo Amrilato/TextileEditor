@@ -1,0 +1,23 @@
+﻿@page "/"
+@using TextileEditor.Web.Components
+
+@* <PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<input id="colorPicker" type="color" @onchange="OnColorChanged" />
+
+<FluentStack Orientation="Orientation.Vertical">
+    <FluentButton OnClick="GenerateDownloadLink" Disabled="TextileContextManager is null">Generate Download Link</FluentButton>
+    <FluentButton OnClick="() => Working(3000)">Begin Delay(3000) in BackgroundWorker (Concurrency)</FluentButton>
+    <FluentButton OnClick="() => Working(10000)">Begin Delay(10000) in BackgroundWorker (Concurrency)</FluentButton>
+    <FluentButton OnClick="Progress">Begin Delay(1000) * 3 in BackgroundWorker (Queue)</FluentButton>
+
+    <Working />
+
+    <FluentListbox Items=@Strings
+                   OptionText="@(i => i)"
+                   OptionValue="@(i => i)" />
+</FluentStack> *@
