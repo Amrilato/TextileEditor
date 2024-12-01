@@ -1,5 +1,4 @@
 ﻿using DotNext.Buffers;
-using MessagePack;
 using Microsoft.JSInterop;
 using System.Runtime.InteropServices;
 using TextileEditor.Shared.Common;

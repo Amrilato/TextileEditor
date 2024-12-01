@@ -8,7 +8,7 @@
             <FluentButton IconStart="@(new Icons.Regular.Size20.ArrowReset())" OnClick="TextilePreviewContext.Rerender" />
             <FluentStack Orientation="Orientation.Vertical">
                 <FluentStack>
-                    <FluentSlider Label="@Localizer[SharedResource.SelectAHorizontalRepeat]" Min="1" Max="100" Step="1" @bind-Value=TextilePreviewContext.RepeatHorizontal>
+                    <FluentSlider Label="SelectAHorizontalRepeat" Min="1" Max="100" Step="1" @bind-Value=TextilePreviewContext.RepeatHorizontal>
                         <FluentSliderLabel Position="1">1</FluentSliderLabel>
                         <FluentSliderLabel Position="10">10</FluentSliderLabel>
                         <FluentSliderLabel Position="20">20</FluentSliderLabel>
@@ -21,7 +21,7 @@
                         <FluentSliderLabel Position="90">90</FluentSliderLabel>
                         <FluentSliderLabel Position="100">100</FluentSliderLabel>
                     </FluentSlider>
-                    <FluentSlider Label="@Localizer[SharedResource.SelectAVerticalRepeat]" Min="1" Max="100" Step="1" @bind-Value=TextilePreviewContext.RepeatVertical>
+                    <FluentSlider Label="SelectAVerticalRepeat" Min="1" Max="100" Step="1" @bind-Value=TextilePreviewContext.RepeatVertical>
                         <FluentSliderLabel Position="1">1</FluentSliderLabel>
                         <FluentSliderLabel Position="10">10</FluentSliderLabel>
                         <FluentSliderLabel Position="20">20</FluentSliderLabel>
@@ -36,7 +36,7 @@
                     </FluentSlider>
                 </FluentStack>
                 <FluentStack>
-                    <FluentSlider Label="@Localizer[SharedResource.SelectAPixelWidth]" Min="1" Max="10" Step="1" @bind-Value=PixelSizeX>
+                    <FluentSlider Label="SelectAPixelWidth" Min="1" Max="10" Step="1" @bind-Value=PixelSizeX>
                         <FluentSliderLabel Position="1">1</FluentSliderLabel>
                         <FluentSliderLabel Position="2">2</FluentSliderLabel>
                         <FluentSliderLabel Position="3">3</FluentSliderLabel>
@@ -48,7 +48,7 @@
                         <FluentSliderLabel Position="9">9</FluentSliderLabel>
                         <FluentSliderLabel Position="10">10</FluentSliderLabel>
                     </FluentSlider>
-                    <FluentSlider Label="@Localizer[SharedResource.SelectAPixelHeight]" Min="1" Max="10" Step="1" @bind-Value=PixelSizeY>
+                    <FluentSlider Label="SelectAPixelHeight" Min="1" Max="10" Step="1" @bind-Value=PixelSizeY>
                         <FluentSliderLabel Position="1">1</FluentSliderLabel>
                         <FluentSliderLabel Position="2">2</FluentSliderLabel>
                         <FluentSliderLabel Position="3">3</FluentSliderLabel>

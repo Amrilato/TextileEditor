@@ -1,16 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using System.Diagnostics.CodeAnalysis;
 using TextileEditor.Shared.Services;
 using TextileEditor.Shared.Services.TextileSessionStorage;
-using TextileEditor.Web.Localization;
 
 namespace TextileEditor.Web.Layout;
 
 public partial class TextileSessionView
 {
-    [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
     [Inject]
     public required ITextileSessionStorage Storage { get; init; }
     [Parameter]

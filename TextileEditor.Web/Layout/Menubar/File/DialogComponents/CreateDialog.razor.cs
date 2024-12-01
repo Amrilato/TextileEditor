@@ -1,15 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Textile.Data;
-using TextileEditor.Web.Localization;
 
 namespace TextileEditor.Web.Layout;
 
 public partial class CreateDialog : IDialogContentComponent<CreateDialogContent>
 {
-    [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
 
     [Parameter]
     public CreateDialogContent Content { get; set; } = default!;

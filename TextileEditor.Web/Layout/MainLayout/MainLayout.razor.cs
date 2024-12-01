@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using TextileEditor.Shared.Painters;
 using TextileEditor.Shared.Services;
 using TextileEditor.Shared.Services.TextileSessionStorage;
-using TextileEditor.Web.Localization;
 using TextileEditor.Web.Painters.Blazor.Renderers;
 using TextileEditor.Web.Services;
 
@@ -11,8 +9,6 @@ namespace TextileEditor.Web.Layout;
 
 public partial class MainLayout : ITextileSessionManager
 {
-    [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
     [Inject]
     public required IEditorConfigure EditorConfigure { get; init; }
     [Inject]

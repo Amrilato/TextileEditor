@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using TextileEditor.Shared.Common;
 using TextileEditor.Shared.Services;
 using TextileEditor.Shared.Services.TextileSessionStorage;
-using TextileEditor.Web.Localization;
 using TextileEditor.Web.Services;
 
 namespace TextileEditor.Web.Layout;
@@ -18,8 +16,6 @@ public partial class File
     [Parameter, EditorRequired]
     public ITextileSessionManager? TextileSessionManager { get; set; }
 
-    [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
     [Inject]
     public required FileDownloadService FileDownloadService { get; init; }
 
@@ -40,7 +36,7 @@ public partial class File
     {
         DialogParameters parameters = new()
         {
-            Title = Localizer[SharedResource.SaveAs],
+            Title = "SaveAs",
             PrimaryAction = "Yes",
             SecondaryAction = "No",
             Width = "500px",
@@ -70,9 +66,9 @@ public partial class File
 
             DialogParameters parameters = new()
             {
-                Title = Localizer[SharedResource.Upload],
+                Title = "Upload",
                 Width = "500px",
-                PrimaryAction = Localizer[SharedResource.Done],
+                PrimaryAction = "Done",
                 TrapFocus = true,
                 Modal = true,
                 PreventScroll = true
@@ -103,8 +99,8 @@ public partial class File
     {
         DialogParameters parameters = new()
         {
-            Title = Localizer[SharedResource.CreateNew],
-            PrimaryAction = Localizer[SharedResource.Create],
+            Title = "Create New",
+            PrimaryAction = "Create",
             TrapFocus = true,
             Modal = true,
             PreventScroll = true

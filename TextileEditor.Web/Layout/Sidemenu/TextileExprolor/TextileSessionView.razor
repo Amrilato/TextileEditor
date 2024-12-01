@@ -17,6 +17,6 @@
 </div>
 
 <FluentMenu Anchor="@($"TextileSessionViewMenu-{(Session?.Guid.ToString() ?? "NullReference")}")" Trigger="MouseButton.Right" Anchored="false">
-    <FluentMenuItem Label="@(renaming ? Localizer[SharedResource.Cancel] : Localizer[SharedResource.Rename])" OnClick="Rename" />
-    <FluentMenuItem Label="@Localizer[SharedResource.Delete]" OnClick="Remove" />
+    <FluentMenuItem Label="@(renaming ? "Cancel" : "Rename")" OnClick="Rename" />
+    <FluentMenuItem Label="Delete" OnClick="Remove" />
 </FluentMenu>

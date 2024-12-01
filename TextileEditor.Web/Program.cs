@@ -18,29 +18,12 @@ builder.Services.AddTextileServices<EditorConfigure, TextileSessionStorage>();
 builder.Services.AddScoped<ILanguageStorageService>(sp => new LanguageStorageService(sp.GetRequiredService<IWebStorageService>(), [new("en")]));
 builder.Services.AddScoped<IBlazorTextileEnvironmentConfigure, BlazorTextileEnvironmentConfigure>();
 builder.Services.AddScoped<FileDownloadService, FileDownloadService>();
-builder.Services.AddLocalization();
 
 var webAssemblyHost = builder.Build();
 
 await InitializeTextileConfigure(webAssemblyHost);
 
 await webAssemblyHost.RunAsync();
-
-//static async Task InitializeLanguage(WebAssemblyHost host)
-//{
-//    var languageStorage = host.Services.GetRequiredService<ILanguageStorageService>();
-//    var culture = await languageStorage.GetCulture();
-
-//    var supportedCultures = languageStorage.SupportedLanguages.Select(c => c.Name).ToArray();
-//    var localizationOptions = host.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
-//    localizationOptions.Value.SetDefaultCulture(culture.Name)
-//                             .AddSupportedCultures(supportedCultures)
-//                             .AddSupportedUICultures(supportedCultures);
-
-//    CultureInfo.DefaultThreadCurrentCulture = culture;
-//    CultureInfo.DefaultThreadCurrentUICulture = culture;
-//}
-
 static async Task InitializeTextileConfigure(WebAssemblyHost host)
 {
     var configure = host.Services.GetRequiredService<IEditorConfigure>();

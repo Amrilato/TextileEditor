@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using SkiaSharp;
 using TextileEditor.Shared.Painters;
@@ -7,7 +6,6 @@ using TextileEditor.Shared.Services;
 using TextileEditor.Shared.Services.TextileSessionStorage;
 using TextileEditor.Shared.Shared.Common;
 using TextileEditor.Web.Layout;
-using TextileEditor.Web.Localization;
 
 namespace TextileEditor.Web.Pages;
 
@@ -15,8 +13,6 @@ public partial class TextileEditorPage : IDisposable
 {
     private TextileSession? watchSession;
 
-    [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
     [Inject]
     public required IMessageService MessageService { get; init; }
     [Inject]

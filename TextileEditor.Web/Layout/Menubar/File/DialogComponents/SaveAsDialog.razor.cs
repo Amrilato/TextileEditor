@@ -1,15 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using TextileEditor.Shared.Common;
-using TextileEditor.Web.Localization;
 
 namespace TextileEditor.Web.Layout;
 
 public partial class SaveAsDialog : IDialogContentComponent<SaveAsDialogContent>
 {
-    [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
 
     [Parameter]
     public SaveAsDialogContent Content { get; set; } = default!;

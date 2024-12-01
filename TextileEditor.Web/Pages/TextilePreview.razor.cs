@@ -1,16 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using TextileEditor.Shared.Painters;
 using TextileEditor.Shared.Services;
-using TextileEditor.Web.Localization;
 
 namespace TextileEditor.Web.Pages;
 
 public partial class TextilePreview : IDisposable
 {
 
-    [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
     [Inject]
     public required IBackgroundWorkerService BackgroundWorkerService { get; init; }
 

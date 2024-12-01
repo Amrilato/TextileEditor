@@ -1,18 +1,12 @@
-﻿using MessagePack;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
-using System.Diagnostics.CodeAnalysis;
 using TextileEditor.Shared.Services;
 using TextileEditor.Shared.Services.TextileSessionStorage;
-using TextileEditor.Web.Localization;
 
 namespace TextileEditor.Web.Layout;
 
 public partial class UploadDialog : IDialogContentComponent<UploadDialogContent>
 {
-    [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
     [Inject]
     public required IEditorConfigure EditorConfigure { get; init; }
     [Inject]
