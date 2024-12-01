@@ -1,0 +1,153 @@
+@import '_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.dwk6czdzfo.bundle.scp.css';
+
+/* /Components/Canvas/Canvas.razor.rz.scp.css */
+#container[b-esl3fhlqu1] {
+    position: relative;
+}
+
+[b-esl3fhlqu1] canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+/* /Components/TextileEditorView/TextileEditorView.razor.rz.scp.css */
+#container[b-vonisryai6] {
+    width: min-content;
+    height: min-content;
+    position: relative;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-template-rows: auto auto auto;
+    gap: 2px;
+}
+/* /Layout/MainLayout/MainLayout.razor.rz.scp.css */
+/* 全体のコンテナ */
+.container[b-3spdg0a25k] {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* 全画面の高さ */
+
+    --sidebar-open-width: 250px; /* サイドメニューの幅 */
+    --sidebar-close-width: calc(0px - var(--sidebar-open-width));
+    --header-height: 40px;
+    --footer-height: 30px;
+}
+
+/* ヘッダー部分 */
+.header[b-3spdg0a25k] {
+    display: flex;
+    align-items: center;
+    padding: 0px;
+    flex: 0 0 var(--header-height); /* 固定高さのヘッダー */
+    height: var(--header-height);
+    background-color: var(--neutral-fill-stealth-rest); /* Fluent UI の背景色 */
+}
+
+/* フッター部分 */
+.footer[b-3spdg0a25k] {
+    display: flex;
+    align-items: center;
+    padding: 0px;
+    flex: 0 0 var(--footer-height); /* 固定高さのフッター */
+    height: var(--footer-height);
+    background-color: var(--neutral-layer-4); /* Fluent UI の背景色 */
+}
+
+.menubar[b-3spdg0a25k] {
+    padding: 5px;
+    display: flex;
+    align-items: center;
+}
+
+/* ボディ部分をフレックスコンテナに */
+.main-body[b-3spdg0a25k] {
+    overflow: auto;
+    display: flex;
+    flex: 1; /* 残りの高さを占める */
+    position: relative; /* 相対位置指定 */
+}
+
+/* サイドメニュー */
+.side-menu[b-3spdg0a25k] {
+    z-index:1;
+    flex: 0 0 var(--sidebar-open-width); /* 固定幅のサイドメニュー */
+    background-color: var(--neutral-layer-2); /* Fluent UI の背景色 */
+    transition: transform 0.3s ease; /* 開閉のアニメーション */
+    transform: translateX(0); /* 初期状態で表示 */
+}
+
+    /* サイドメニューが隠れた状態 */
+    .side-menu.closed[b-3spdg0a25k] {
+        transform: translateX(var(--sidebar-close-width)); /* 左に移動して隠す */
+    }
+
+    .side-menu.open[b-3spdg0a25k] {
+        box-shadow: 10px 0 15px rgba(0, 0, 0, 0.3);
+    }
+
+/* コンテンツ部分 */
+.content[b-3spdg0a25k] {
+    overflow: auto;
+    flex: 1; /* 残りの幅を占める */
+    background-color: var(--neutral-layer-1); /* Fluent UI の背景色 */
+    padding: 20px;
+    margin-left: 0; /* 初期値 */
+    transition: margin-left 0.3s ease; /* 開閉のアニメーション */
+}
+
+    /* コンテンツが閉じた状態 */
+    .content.closed[b-3spdg0a25k] {
+        margin-left: var(--sidebar-close-width); /* サイドメニューが閉じたときのマージン */
+    }
+
+.separator[b-3spdg0a25k] {
+    height: 1px;
+    background-color: var(--accent-fill-rest);
+}
+/* /Layout/MainLayout/UtilComponents/Progress.razor.rz.scp.css */
+.progress-container[b-2u2nzhc48n] {
+    background-color: var(--neutral-layer-card-container);
+    padding: var(--base-height-multiplier)px;
+    border-radius: var(--layer-corner-radius)px;
+    box-shadow: var(--elevation-shadow-card-rest);
+    color: var(--neutral-foreground-rest);
+}
+
+.progress-header[b-2u2nzhc48n] {
+    margin-bottom: var(--base-height-multiplier)px;
+}
+
+    .progress-header h3[b-2u2nzhc48n] {
+        font-size: var(--type-ramp-plus-1-font-size);
+        line-height: var(--type-ramp-plus-1-line-height);
+        font-weight: var(--font-weight);
+    }
+
+    .progress-header p[b-2u2nzhc48n] {
+        font-size: var(--type-ramp-base-font-size);
+        line-height: var(--type-ramp-base-line-height);
+        color: var(--neutral-foreground-hint);
+    }
+/* /Layout/Sidemenu/TextileExprolor/TextileExplorer.razor.rz.scp.css */
+#container[b-qjhrw8tcmy] {
+    margin-top: 10px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: calc(100% - 20px);
+    position: absolute;
+}
+
+.list[b-qjhrw8tcmy] {
+    margin-top: 10px;
+    overflow: auto;
+    width: 100%;
+    height: 50%;
+}
+/* /Pages/TextileEditorPage.razor.rz.scp.css */
+body[b-41r3qnx455] {
+}
