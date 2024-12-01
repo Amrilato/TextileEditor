@@ -1,6 +1,0 @@
-﻿@namespace TextileEditor.Web.Components
-@using SkiaSharp.Views.Blazor
-
-<div id="container" style="@SizedStyle" @onclick=OnClick @onpointermove=OnPointerMove @onpointerenter=OnPointerEnter @onpointerleave=OnPointerLeave @onpointerdown=OnPointerDown @onpointerup=OnPointerUp>
-    <SKCanvasView @ref=SKCanvasView IgnorePixelScaling="true" OnPaintSurface="OnPaintSurface" />
-</div>
