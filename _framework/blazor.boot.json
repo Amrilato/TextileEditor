@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "TextileEditor.Web",
   "resources": {
-    "hash": "sha256-s79Z7BMMIkMtWyAXTgtHsLF2vP2ztxRaE3rjCzQr+v8=",
+    "hash": "sha256-plZ59z79oktDdWdn3Rqz926fvBpuHj+2ICJkL1G0HnI=",
     "jsModuleNative": {
       "dotnet.native.js": "sha256-JKaiStXhZ0qSLwDFf/Kx1x3YNnbc8uSySLaKxC9arAM="
     },
@@ -12,9 +12,7 @@
       "dotnet.native.wasm": "sha256-+O5/WfWsKgXI9S31TR95HP2PJMZb/HYVgrfLM7kF7pg="
     },
     "icu": {
-      "icudt_CJK.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
-      "icudt_EFIGS.dat": "sha256-8fItetYY8kQ0ww6oxwTLiT3oXlBwHKumbeP2pRF4yTc=",
-      "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
+      "icudt.dat": "sha256-tO5O5YzMTVSaKBboxAqezOQL9ewmupzV2JrB5Rkc8a4="
     },
     "coreAssembly": {},
     "assembly": {
@@ -103,7 +101,7 @@
   "cacheBootResources": true,
   "debugLevel": 0,
   "linkerEnabled": true,
-  "globalizationMode": "sharded",
+  "globalizationMode": "all",
   "extensions": {
     "blazor": {}
   }
