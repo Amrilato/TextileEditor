@@ -433,19 +433,19 @@
       "url": "_framework\/System.wasm.br"
     },
     {
-      "hash": "sha256-hu5a4qcH4ZYWMbVY1u0TG088eZpTKqrsiyRaJR4+us4=",
+      "hash": "sha256-PZ8+ffBJQwGC4xWDyS54KgbOFYDFisDkx9WyZ9E5jRk=",
       "url": "_framework\/Textile.wasm.br"
     },
     {
-      "hash": "sha256-XkDs34XNNLZZdljdXUd2Io76So2Nnqk2MOhy46PzHBY=",
+      "hash": "sha256-xiT9TAj\/kPL8dF\/GnZqJw8YBj5Nt0SAAGNe+yOWTFGs=",
       "url": "_framework\/TextileEditor.Shared.wasm.br"
     },
     {
-      "hash": "sha256-S5jcCczM9ztBU1caaNWDvHshpgPNzWexRhPRkrvkCxA=",
+      "hash": "sha256-2KLTMild\/CTR\/zp\/zLQZkKDqmDT\/XwIVPJQSFzMEqwE=",
       "url": "_framework\/TextileEditor.Web.wasm.br"
     },
     {
-      "hash": "sha256-oAdopF9ccI6Hz2SpFdFZ7Y4M+x5ZcDf3UMF43tB55PA=",
+      "hash": "sha256-aE1Q3+oxvPQKyzNFK3fHxPWNldLCk3o5LMW7vCF7JOE=",
       "url": "_framework\/blazor.boot.json.br"
     },
     {
@@ -525,5 +525,5 @@
       "url": "brotliloader.min.js"
     }
   ],
-  "version": "ryWknJse"
+  "version": "LvL+ioqw"
 };
