@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Textile.Data;
 using TextileEditor.Shared.Services;
-using TextileEditor.Shared.Shared.Common;
 
 namespace TextileEditor.Shared.Painters;
 
@@ -43,9 +42,9 @@ internal abstract class TextilePainterContext : IInternalTextileEditorContext, I
         PropertyChanged?.Invoke(this, new(propertyName));
     }
     protected void InvokePropertyChanged([CallerMemberName] string propertyName = "") => PropertyChanged?.Invoke(this, new(propertyName));
-    protected async void DelayInvokePropertyChangedAsync(Task delayTask, [CallerMemberName] string propertyName = "")
+    protected async void NotifyTaskCompleteInvokePropertyChangedAsync(Task task, [CallerMemberName] string propertyName = "")
     {
-        await delayTask;
+        await task;
         PropertyChanged?.Invoke(this, new(propertyName));
     }
 

@@ -17,10 +17,10 @@ internal class TextilePreviewContext : TextilePainterContext, ITextilePreviewCon
                              concurrencyBackgroundWorkContext,
                              new());
 
-        DelayInvokePropertyChangedAsync(previewPainter.PrerenderAsync(), nameof(AlreadyRender));
+        NotifyTaskCompleteInvokePropertyChangedAsync(previewPainter.PrerenderAsync(), nameof(AlreadyRender));
     }
 
-    public void Rerender() => DelayInvokePropertyChangedAsync(previewPainter.PrerenderAsync(), nameof(AlreadyRender));
+    public void Rerender() => NotifyTaskCompleteInvokePropertyChangedAsync(previewPainter.PrerenderAsync(), nameof(AlreadyRender));
 
     public override Task SetSessionAsync(TextileSession textileSession)
     {
@@ -28,7 +28,7 @@ internal class TextilePreviewContext : TextilePainterContext, ITextilePreviewCon
         SetSession(textileSession);
         var prerender = previewPainter.PrerenderAsync();
         InvokePropertyChanged(nameof(CanvasSize));
-        DelayInvokePropertyChangedAsync(prerender, nameof(AlreadyRender));
+        NotifyTaskCompleteInvokePropertyChangedAsync(prerender, nameof(AlreadyRender));
         InvokePropertyChanged(nameof(AlreadyRender));
         return prerender;
     }
@@ -43,7 +43,7 @@ internal class TextilePreviewContext : TextilePainterContext, ITextilePreviewCon
             previewPainter.PixelSize = value;
             InvokePropertyChanged();
             InvokePropertyChanged(nameof(CanvasSize));
-            DelayInvokePropertyChangedAsync(previewPainter.PrerenderAsync(), nameof(AlreadyRender));
+            NotifyTaskCompleteInvokePropertyChangedAsync(previewPainter.PrerenderAsync(), nameof(AlreadyRender));
             InvokePropertyChanged(nameof(AlreadyRender));
         }
     }
@@ -84,7 +84,7 @@ internal class TextilePreviewContext : TextilePainterContext, ITextilePreviewCon
     {
         var prerender = previewPainter.PrerenderAsync();
         InvokePropertyChanged(nameof(CanvasSize));
-        DelayInvokePropertyChangedAsync(prerender, nameof(AlreadyRender));
+        NotifyTaskCompleteInvokePropertyChangedAsync(prerender, nameof(AlreadyRender));
         InvokePropertyChanged(nameof(AlreadyRender));
     }
 }
