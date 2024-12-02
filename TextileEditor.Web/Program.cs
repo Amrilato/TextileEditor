@@ -15,7 +15,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddFluentUIComponents();
 builder.Services.AddScoped<IWebStorageService, WebStorageService>();
 builder.Services.AddTextileServices<EditorConfigure, TextileSessionStorage>();
-builder.Services.AddScoped<ILanguageStorageService>(sp => new LanguageStorageService(sp.GetRequiredService<IWebStorageService>(), [new("en")]));
 builder.Services.AddScoped<IBlazorTextileEnvironmentConfigure, BlazorTextileEnvironmentConfigure>();
 builder.Services.AddScoped<FileDownloadService, FileDownloadService>();
 
