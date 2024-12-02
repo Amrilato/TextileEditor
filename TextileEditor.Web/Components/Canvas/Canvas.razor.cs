@@ -27,8 +27,7 @@ public partial class Canvas : IDisposable
     private SKCanvasView? SKCanvasView;
     private void OnPaintSurface(SKPaintSurfaceEventArgs eventArgs) => SKSurfacePainter?.OnPaintSurface(eventArgs.Surface, eventArgs.Info, eventArgs.RawInfo);
 
-    protected override void OnAfterRender(bool firstRender) => Invalidate();
-    public void Invalidate() => SKCanvasView?.Invalidate();
+    protected override void OnAfterRender(bool firstRender) => SKCanvasView?.Invalidate();
     private void InvokeStateHasChanged() => InvokeAsync(StateHasChanged);
 
     protected override void OnParametersSet()
