@@ -1,20 +1,15 @@
 {
   "mainAssemblyName": "TextileEditor.Web",
   "resources": {
-    "hash": "sha256-ZK2RIQtlQIRtdVeG/fRsYSvmf5JAtMndH28JjOyOrM4=",
+    "hash": "sha256-wHxaHeBDR5kL7eERuz8UlqwrgTV0YsM/IfFo+bcoIzw=",
     "jsModuleNative": {
-      "dotnet.native.js": "sha256-JKaiStXhZ0qSLwDFf/Kx1x3YNnbc8uSySLaKxC9arAM="
+      "dotnet.native.js": "sha256-1gXYGU4kR8kdzQ3SmYKPzv2trpvviWKjYQyuw5zsa5g="
     },
     "jsModuleRuntime": {
       "dotnet.runtime.js": "sha256-FjrgL9dY6dc2yUoXDWowSfachSgM8O29qUMWDQOJKRI="
     },
     "wasmNative": {
-      "dotnet.native.wasm": "sha256-ylZm0PwnRzzCf7PIGb5yXLHuJqPVK2DqzOJ9MSteYys="
-    },
-    "icu": {
-      "icudt_CJK.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
-      "icudt_EFIGS.dat": "sha256-8fItetYY8kQ0ww6oxwTLiT3oXlBwHKumbeP2pRF4yTc=",
-      "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
+      "dotnet.native.wasm": "sha256-eg7Hgf/tn53on7/wSd8Snjn16No/ZaIAR2EgiMdikDk="
     },
     "coreAssembly": {},
     "assembly": {
@@ -44,7 +39,7 @@
       "SkiaSharp.Views.Blazor.wasm": "sha256-WDKvR8STl1nlDNu6oBeLRo+qh1C2y/Q547cC6Q9Lc6U=",
       "SkiaSharp.wasm": "sha256-BcADXPudpYzhn+u5fOMyXEAvlnM/MYZKFVufEELmCfs=",
       "System.Collections.Concurrent.wasm": "sha256-EOCjjqnY94gdVhf3yfED09/Y6389QT7Voo6bm4GS9cw=",
-      "System.Collections.Immutable.wasm": "sha256-tWg0d+ehcyPwvfFZiNCa3MUCQdtguKJNSmn/PLvAHWk=",
+      "System.Collections.Immutable.wasm": "sha256-PWfLZXXWGNN8iO26ilRQBFH5rGplkzlr7pXy+jDTR94=",
       "System.Collections.NonGeneric.wasm": "sha256-c0PhM1bGZeFYONolLOKUVZIc//C1mzUPf9yznCgfaSc=",
       "System.Collections.Specialized.wasm": "sha256-QuZw8bJ09g4/0JdvBDDW5qMHr9aCKtpS5STh9wCM1gg=",
       "System.Collections.wasm": "sha256-VqYTYdSSUeSd8PMl7JYQjBYohEkCJ6bY0IKDZtvCXJo=",
@@ -64,7 +59,7 @@
       "System.Net.Http.wasm": "sha256-tjl9UHE7VV3XKqxT6wHB1zkfA80LWk5zKY0QFwXAx/I=",
       "System.Net.Primitives.wasm": "sha256-SEzIbP2X0pyzZjjN64Vd8QV0r8XLYiDjA7NQzQCsaso=",
       "System.ObjectModel.wasm": "sha256-M4U+EyC5YLy0jZ/RapkJyYn2JSEPJLtsCGVle1TMzaI=",
-      "System.Private.CoreLib.wasm": "sha256-lFR4I8kQYmDsZsl9YbzmGwEdN4n+zeBD2vbvianwyy0=",
+      "System.Private.CoreLib.wasm": "sha256-t8S2WH5jYJR4auCc4ldnzNS1zaaC8xkboyNmwfNv5SQ=",
       "System.Private.Uri.wasm": "sha256-O4HJZIh9fGyxh5Oim/g0sFH+w7p2SaZ/9t0ldpON3m0=",
       "System.Reflection.Emit.ILGeneration.wasm": "sha256-JkqSEXMyq1WGuyEDZupa5G/CLxPLXdmIqgQUJJl+onw=",
       "System.Reflection.Emit.Lightweight.wasm": "sha256-a0d8vFVcmCZ25U+GIKJZPJSbk8aQjvwElZYNzTV0VCs=",
@@ -89,7 +84,7 @@
       "System.wasm": "sha256-K4FBGruAV5ViMIVyPF4qcCJle0TxSwAgopPIxNQnRVY=",
       "Textile.wasm": "sha256-jVKv1yiVapJ6jDmS57KIJRG0A6+JsqvHbbvVEh7k1B8=",
       "TextileEditor.Shared.wasm": "sha256-Ywu3Y2CVr+FC/sfxkszbKwmC8rYip5YWf0l6SbQh0JY=",
-      "TextileEditor.Web.wasm": "sha256-tSbZA1OYtabp+UUnX964kmpObbo666UP4bLFukOn7Hs="
+      "TextileEditor.Web.wasm": "sha256-X+NMH3gdEUM6bqAM/5bWEXDFVYdLBXH6g13dnwRzygA="
     },
     "libraryInitializers": {
       "_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.lib.module.js": "sha256-/LPTy2KpNBBYdj9b6lNMDILfmbdqo+FWKCFS6WQd0mU="
@@ -101,7 +96,7 @@
   "cacheBootResources": true,
   "debugLevel": 0,
   "linkerEnabled": true,
-  "globalizationMode": "sharded",
+  "globalizationMode": "invariant",
   "extensions": {
     "blazor": {}
   }

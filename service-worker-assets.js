@@ -261,7 +261,7 @@
       "url": "_framework\/System.Collections.Concurrent.wasm.br"
     },
     {
-      "hash": "sha256-tBmB2VfwzgMWByurFUFWqX\/+ZEZdrqb0kQ5RdNY2PaY=",
+      "hash": "sha256-zTz\/BHFeE6Ukq591L7OiEuqjArWqsxGLDAMaEz2hMr0=",
       "url": "_framework\/System.Collections.Immutable.wasm.br"
     },
     {
@@ -341,7 +341,7 @@
       "url": "_framework\/System.ObjectModel.wasm.br"
     },
     {
-      "hash": "sha256-7P5QGG83RWaj0q+JQOpDlJrB1vLFUyGHThCE1kkJN9s=",
+      "hash": "sha256-ZHG+JmpaiNzxIwA\/ykf\/WxL4rLheCBN7jk872hlmCIE=",
       "url": "_framework\/System.Private.CoreLib.wasm.br"
     },
     {
@@ -441,11 +441,11 @@
       "url": "_framework\/TextileEditor.Shared.wasm.br"
     },
     {
-      "hash": "sha256-2KLTMild\/CTR\/zp\/zLQZkKDqmDT\/XwIVPJQSFzMEqwE=",
+      "hash": "sha256-58IFMMdg5X30DXJhyR0lqvukqjm9sGxVrKlpjFAz5Qc=",
       "url": "_framework\/TextileEditor.Web.wasm.br"
     },
     {
-      "hash": "sha256-aE1Q3+oxvPQKyzNFK3fHxPWNldLCk3o5LMW7vCF7JOE=",
+      "hash": "sha256-b9UBdlT\/6Kr3oCE6KtbVCkjvZ1C+vF0BICe0se\/xg\/4=",
       "url": "_framework\/blazor.boot.json.br"
     },
     {
@@ -457,28 +457,16 @@
       "url": "_framework\/dotnet.js"
     },
     {
-      "hash": "sha256-JKaiStXhZ0qSLwDFf\/Kx1x3YNnbc8uSySLaKxC9arAM=",
+      "hash": "sha256-1gXYGU4kR8kdzQ3SmYKPzv2trpvviWKjYQyuw5zsa5g=",
       "url": "_framework\/dotnet.native.js"
     },
     {
-      "hash": "sha256-Wlsn+7CRjCUlGWip4cwh7\/TIKwDUPnIJzUs6gXL2EHM=",
+      "hash": "sha256-ko+TB3a4w7jdE13xUwsLNQLk6JzLsRKd+hF7kNyFmTM=",
       "url": "_framework\/dotnet.native.wasm.br"
     },
     {
       "hash": "sha256-FjrgL9dY6dc2yUoXDWowSfachSgM8O29qUMWDQOJKRI=",
       "url": "_framework\/dotnet.runtime.js"
-    },
-    {
-      "hash": "sha256-qPzRJ7vpZXzgfn\/zRN4sE1DCkIMOhv0uhpIe\/6UMYj4=",
-      "url": "_framework\/icudt_CJK.dat.br"
-    },
-    {
-      "hash": "sha256-8C0k+ite5nej4L1bjieJp6Wsf9DY82n6f85vCedJK\/Y=",
-      "url": "_framework\/icudt_EFIGS.dat.br"
-    },
-    {
-      "hash": "sha256-fv9mQqIBur\/JQyexfKrVYjdpw7zdaW4zV4qxIkzgxlI=",
-      "url": "_framework\/icudt_no_CJK.dat.br"
     },
     {
       "hash": "sha256-Z8SKS0KVJBc79SJu3GaJm5fkN6TlEoc0YDLjbFVDZMI=",
@@ -525,5 +513,5 @@
       "url": "brotliloader.min.js"
     }
   ],
-  "version": "LvL+ioqw"
+  "version": "F+rz7N1u"
 };
