@@ -8,7 +8,8 @@ public static class TextileSessionSerializer
 {
     private const byte SessionFile = 0;
 
-    public static void Serialize(TextileSession session, IBufferWriter<byte> buffer)
+    public static void Serialize<TBufferWriter>(TextileSession session, TBufferWriter buffer)
+        where TBufferWriter : IBufferWriter<byte>
     {
         buffer.GetSpan(1)[0] = SessionFile;
         buffer.Advance(1);
