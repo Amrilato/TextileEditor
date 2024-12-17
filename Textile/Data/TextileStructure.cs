@@ -18,7 +18,7 @@ public interface ITextileStructureSize
 }
 public readonly record struct TextileStructureSize(int TieupWidth, int TieupHeight, int TextileWidth, int TextileHeight) : ITextileStructureSize;
 
-public class TextileStructure
+public class TextileStructure : IReadOnlyTextileStructure
 {
     public Heddle Heddle { get; }
     public Pedal Pedal { get; }
@@ -26,6 +26,13 @@ public class TextileStructure
     public Textile Textile { get; }
     public HeddleColor HeddleColor { get; }
     public PedalColor PedalColor { get; }
+
+    IReadOnlyObservableTextile<TextileIndex, bool> IReadOnlyTextileStructure.Heddle => Heddle;
+    IReadOnlyObservableTextile<TextileIndex, bool> IReadOnlyTextileStructure.Pedal => Pedal;
+    IReadOnlyObservableTextile<TextileIndex, bool> IReadOnlyTextileStructure.Tieup => Tieup;
+    IReadOnlyObservableTextile<TextileIndex, bool> IReadOnlyTextileStructure.Textile => Textile;
+    IReadOnlyObservableTextile<int, Color> IReadOnlyTextileStructure.HeddleColor => HeddleColor;
+    IReadOnlyObservableTextile<int, Color> IReadOnlyTextileStructure.PedalColor => PedalColor;
 
     public TextileStructure(ITextileStructureSize size) : this(size.TieupWidth, size.TieupHeight, size.TextileWidth, size.TextileHeight) { }
     public TextileStructure(Heddle heddle, Pedal pedal, Tieup tieup, Textile textile, HeddleColor heddleColor, PedalColor pedalColor)
