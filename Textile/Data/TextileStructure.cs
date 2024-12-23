@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using Textile.Colors;
 using Textile.Common;
 using Textile.Interfaces;
-using static Textile.Data.TextileData;
+using static Textile.Data.TextileBase;
 
 namespace Textile.Data;
 
@@ -130,7 +130,7 @@ public class TextileStructure : IReadOnlyTextileStructure
         Serialize(bufferWriter, PedalColor);
     }
 
-    private static void Serialize(IBufferWriter<byte> bufferWriter, TextileData textileData)
+    private static void Serialize(IBufferWriter<byte> bufferWriter, TextileBase textileData)
     {
         var span = textileData.AsSpan();
         var buffer = MemoryMarshal.Cast<byte, uint>(bufferWriter.GetSpan(span.Length * 4 + 12));
@@ -161,7 +161,7 @@ public class TextileStructure : IReadOnlyTextileStructure
         return new(textile, heddle, pedal, tieup, heddleColor, pedalColor);
     }
     private static int Deserialize<T>(ReadOnlySpan<uint> buffer, out T result)
-        where T : TextileData, ICreateTextile<T>
+        where T : TextileBase, ICreateTextile<T>
     {
         var length = (int)buffer[0];
         result = T.Create((int)buffer[1], (int)buffer[2]);

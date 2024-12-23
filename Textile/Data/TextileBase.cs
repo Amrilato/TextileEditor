@@ -5,7 +5,7 @@ using Textile.Interfaces;
 
 namespace Textile.Data;
 
-public abstract class TextileData(int width, int height, uint[] value) : IObservableTextile<TextileIndex, bool>, IReadOnlyObservableTextile<TextileIndex, bool>
+public abstract class TextileBase(int width, int height, uint[] value) : IObservableTextile<TextileIndex, bool>, IReadOnlyObservableTextile<TextileIndex, bool>
 {
     public int Width { get; } = width;
     public int Height { get; } = height;
@@ -63,7 +63,7 @@ public abstract class TextileData(int width, int height, uint[] value) : IObserv
         StateHasChanged(changedIndices[..changedIndex]);
     }
 
-    public TextileData Clip(TextileRange range)
+    public TextileBase Clip(TextileRange range)
     {
         ClipTextile clip = new(range.Width, range.Height);
         clip.CopyFrom(this, sourceOffset: new(range.Left, range.Top));
@@ -109,7 +109,7 @@ public abstract class TextileData(int width, int height, uint[] value) : IObserv
     protected abstract int ArrayNonConsecutiveLength { get; }
     protected abstract int ArrayConsecutiveIndex(TextileIndex index);
     protected abstract int ArrayNonConsecutiveIndex(TextileIndex index);
-    protected abstract TextileIndex ToIndex(int ConsecutiveIndex, int NonConsecutiveIndex);
+    internal abstract TextileIndex ToIndex(int ConsecutiveIndex, int NonConsecutiveIndex);
 
     protected Memory<uint> ArrayConsecutiveLine(TextileIndex index) => ArrayConsecutiveLine(ArrayNonConsecutiveIndex(index));
     protected Memory<uint> ArrayConsecutiveLine(int index)
@@ -152,17 +152,17 @@ public abstract class TextileData(int width, int height, uint[] value) : IObserv
         int Count { get; }
     }
 
-    internal readonly struct HorizontalLines(TextileData textile) : ILines
+    internal readonly struct HorizontalLines(TextileBase textile) : ILines
     {
-        private readonly TextileData textile = textile;
+        private readonly TextileBase textile = textile;
         public ReadOnlyMemory<uint> this[int index] => textile.HorizontalLine(index);
         public int Version => textile.version;
         public int MemoryLength => textile.Height;
         public int Count => textile.Width;
     }
-    internal readonly struct VerticalLines(TextileData textile) : ILines
+    internal readonly struct VerticalLines(TextileBase textile) : ILines
     {
-        private readonly TextileData textile = textile;
+        private readonly TextileBase textile = textile;
         public ReadOnlyMemory<uint> this[int index] => textile.VerticalLine(index);
         public int Version => textile.version;
         public int MemoryLength => textile.Width;
