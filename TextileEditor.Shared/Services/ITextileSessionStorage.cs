@@ -1,7 +1,5 @@
 ﻿using TextileEditor.Shared.View.TextileEditor.Pipeline;
 using TextileEditor.Shared.View.TextileEditor;
-using System.Collections.Concurrent;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using Textile.Data;
 using TextileEditor.Shared.View.TextilePreview;
@@ -22,6 +20,8 @@ public interface ITextileSessionStorage
     Task CreateAsync(TextileData textileData);
     Task AddOrSaveAsync(TextileSession session);
     Task RemoveAsync(TextileSession session);
+    void Serialize(TextileData textileData, IBufferWriter<byte> bufferWriter);
+    Task DeserializeAsync(ReadOnlyMemory<byte> buffer);
 }
 
 public delegate void SessionListChangedEvent(ITextileSessionStorage storage, SessionListChangedEventArgs eventArgs);
@@ -106,4 +106,6 @@ internal class TextileSessionStorage(IDataStorage dataStorage, IAppSettings appS
             await dataStorage.DeleteAsync($"TextileData-{session.TextileData.Guid}");
         }
     }
+    public void Serialize(TextileData textileData, IBufferWriter<byte> bufferWriter) => TextileDataSerializer.Serialize(textileData, bufferWriter);
+    public Task DeserializeAsync(ReadOnlyMemory<byte> buffer) => CreateAsync(TextileDataSerializer.Deserialize(buffer));
 }
