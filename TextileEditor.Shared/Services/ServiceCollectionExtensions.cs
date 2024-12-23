@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using TextileEditor.Shared.Services.Configuration;
 using TextileEditor.Shared.View.TextileEditor.Pipeline;
 using TextileEditor.Shared.View.TextilePreview.Pipeline;
 
@@ -14,7 +13,6 @@ public static class ServiceCollectionExtensions
     {
         serviceDescriptors
             .AddScoped<IDataStorage, TDataStorage>()
-            .AddScoped<ISerializedStorage, SerializedStorage>()
             .AddScoped<ITextileEditorViewRenderPipelineProvider, TTextileEditorViewRenderPipelineProvider>()
             .AddScoped<ITextilePreviewRenderPipelineProvider, TTextilePreviewRenderPipelineProvider>()
             .AddScoped<IAppSettings, LazyAppSettings>();

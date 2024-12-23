@@ -1,14 +1,22 @@
-﻿using SkiaSharp;
+﻿using DotNext.Buffers;
+using SkiaSharp;
+using System.Buffers;
 using System.ComponentModel;
+using TextileEditor.Shared.Serialization.Configuration;
 using TextileEditor.Shared.View.TextileEditor;
 
-namespace TextileEditor.Shared.Services.Configuration;
+namespace TextileEditor.Shared.Services;
 
-internal class LazyAppSettings(ISerializedStorage serializedStorage) : IAppSettings
+internal class LazyAppSettings(IDataStorage dataStorage) : IAppSettings
 {
+
+    private static async Task<AppSettings?> LoadAsync(IDataStorage dataStorage)
+    {
+        return AppSettingsSerializer.Deserialize((await dataStorage.LoadAsync(AppSettingKey)).AsMemory());
+    }
     private static TimeSpan Timeout => TimeSpan.FromSeconds(1);
     private const string AppSettingKey = nameof(AppSettings);
-    private readonly Task<AppSettings?> loadTask = serializedStorage.LoadAsync<AppSettings>(AppSettingKey);
+    private readonly Task<AppSettings?> loadTask = LoadAsync(dataStorage);
     private AppSettings? appSettings;
     private AppSettings AppSettings
     {
@@ -37,7 +45,9 @@ internal class LazyAppSettings(ISerializedStorage serializedStorage) : IAppSetti
     {
         if (appSettings is null)
             return;
-        await serializedStorage.SaveAsync(AppSettingKey, appSettings);
+        PoolingArrayBufferWriter<byte> buffer = new(ArrayPool<byte>.Shared);
+        AppSettingsSerializer.Serialize(AppSettings, buffer);
+        await dataStorage.SaveAsync(AppSettingKey, buffer.DetachBuffer().Span);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged

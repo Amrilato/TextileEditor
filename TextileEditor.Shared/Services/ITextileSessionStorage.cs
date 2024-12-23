@@ -1,6 +1,4 @@
-﻿using TextileEditor.Shared.Serialization;
-using TextileEditor.Shared.Services.Configuration;
-using TextileEditor.Shared.View.TextileEditor.Pipeline;
+﻿using TextileEditor.Shared.View.TextileEditor.Pipeline;
 using TextileEditor.Shared.View.TextileEditor;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
@@ -8,6 +6,9 @@ using System.Diagnostics.CodeAnalysis;
 using Textile.Data;
 using TextileEditor.Shared.View.TextilePreview;
 using TextileEditor.Shared.View.TextilePreview.Pipeline;
+using DotNext.Buffers;
+using System.Buffers;
+using TextileEditor.Shared.Serialization.Textile;
 
 namespace TextileEditor.Shared.Services;
 
@@ -50,12 +51,12 @@ public class TextileSession
     public TextilePreviewContext TextilePreviewContext { get; init; }
 }
 
-internal class TextileSessionStorage(ISerializedStorage serializedStorage, IAppSettings appSettings, ITextileEditorViewRenderPipelineProvider textileEditorViewRenderPipelineProvider, ITextilePreviewRenderPipelineProvider textilePreviewRenderPipelineProvider) : ITextileSessionStorage
+internal class TextileSessionStorage(IDataStorage dataStorage, IAppSettings appSettings, ITextileEditorViewRenderPipelineProvider textileEditorViewRenderPipelineProvider, ITextilePreviewRenderPipelineProvider textilePreviewRenderPipelineProvider) : ITextileSessionStorage
 {
     private readonly Lock Lock = new();
     private int version;
     private int readOnlyVersion;
-    private readonly List<TextileSession> sessions = new();
+    private readonly List<TextileSession> sessions = [];
     [field: AllowNull]
     public IReadOnlyList<TextileSession> Sessions
     {
@@ -64,11 +65,11 @@ internal class TextileSessionStorage(ISerializedStorage serializedStorage, IAppS
             using (Lock.EnterScope())
             {
                 if (readOnlyVersion >= version)
-                    return field ??= sessions.ToImmutableArray();
+                    return field ??= [.. sessions];
                 else
                 {
                     readOnlyVersion = version;
-                    return field = sessions.ToImmutableArray();
+                    return field = [.. sessions];
                 }
             }
         }
@@ -86,7 +87,9 @@ internal class TextileSessionStorage(ISerializedStorage serializedStorage, IAppS
             version++;
         }
         SessionListChanged?.Invoke(this, new(session, SessionListChangedState.Add));
-        await serializedStorage.SaveAsync($"TextileData-{session.TextileData.Guid.ToString()}", session.TextileData);
+        PoolingArrayBufferWriter<byte> buffer = new(ArrayPool<byte>.Shared);
+        TextileDataSerializer.Serialize(session.TextileData, buffer);
+        await dataStorage.SaveAsync($"TextileData-{session.TextileData.Guid}", buffer.DetachBuffer().Span);
     }
 
     public async Task RemoveAsync(TextileSession session)
@@ -100,7 +103,7 @@ internal class TextileSessionStorage(ISerializedStorage serializedStorage, IAppS
         if (removed)
         {
             SessionListChanged?.Invoke(this, new(session, SessionListChangedState.Remove));
-            await serializedStorage.DeleteAsync($"TextileData-{session.TextileData.Guid.ToString()}");
+            await dataStorage.DeleteAsync($"TextileData-{session.TextileData.Guid}");
         }
     }
 }

@@ -4,7 +4,7 @@ using TextileEditor.Shared.Common;
 using TextileEditor.Shared.Serialization.MessagePackFormatters;
 using TextileEditor.Shared.View.TextileEditor;
 
-namespace TextileEditor.Shared.Services.Configuration;
+namespace TextileEditor.Shared.Serialization.Configuration;
 
 [MessagePackObject(AllowPrivate = true)]
 internal class AppSettings : PropertyChangedBase

@@ -3,7 +3,7 @@ using Textile.Data;
 using TextileEditor.Shared.Common;
 using TextileEditor.Shared.Serialization.MessagePackFormatters;
 
-namespace TextileEditor.Shared.Serialization;
+namespace TextileEditor.Shared.Serialization.Textile;
 
 [MessagePackObject]
 public class TextileData : PropertyChangedBase

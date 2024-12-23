@@ -3,7 +3,7 @@ using System.ComponentModel;
 using TextileEditor.Shared.View.TextileEditor;
 using TextileEditor.Shared.View.TextilePreview;
 
-namespace TextileEditor.Shared.Services.Configuration;
+namespace TextileEditor.Shared.Services;
 
 public interface IAppSettings : INotifyPropertyTextileEditorViewConfigure, INotifyPropertyTextilePreviewConfigure
 {
