@@ -1,5 +1,4 @@
 ﻿using SkiaSharp;
-using System.Buffers;
 using System.Runtime.CompilerServices;
 using Textile.Colors;
 using Textile.Common;

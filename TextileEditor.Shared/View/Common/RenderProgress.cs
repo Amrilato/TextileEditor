@@ -2,44 +2,35 @@
 /// <summary>
 /// Represents the progress of a rendering process.
 /// </summary>
-public readonly struct RenderProgress
+/// <remarks>
+/// Initializes a new instance of the <see cref="RenderProgress"/> struct.
+/// </remarks>
+public readonly struct RenderProgress(int phase, int maxPhase, int step, int maxStep, RenderProgressStates status)
 {
     /// <summary>
     /// The current phase of the rendering process.
     /// </summary>
-    public int Phase { get; init; }
+    public int Phase { get; init; } = phase;
 
     /// <summary>
     /// The total number of phases in the rendering process.
     /// </summary>
-    public int MaxPhase { get; init; }
+    public int MaxPhase { get; init; } = maxPhase;
 
     /// <summary>
     /// The current step within the current phase.
     /// </summary>
-    public int Step { get; init; }
+    public int Step { get; init; } = step;
 
     /// <summary>
     /// The total number of steps within the current phase.
     /// </summary>
-    public int MaxStep { get; init; }
+    public int MaxStep { get; init; } = maxStep;
 
     /// <summary>
     /// The current state of the rendering process.
     /// </summary>
-    public RenderProgressStates Status { get; init; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RenderProgress"/> struct.
-    /// </summary>
-    public RenderProgress(int phase, int maxPhase, int step, int maxStep, RenderProgressStates status)
-    {
-        Phase = phase;
-        MaxPhase = maxPhase;
-        Step = step;
-        MaxStep = maxStep;
-        Status = status;
-    }
+    public RenderProgressStates Status { get; init; } = status;
 
     /// <summary>
     /// The percentage progress of the rendering process, dynamically calculated.
@@ -66,18 +57,44 @@ public readonly struct RenderProgress
         return $"Phase: {Phase}/{MaxPhase}, Step: {Step}/{MaxStep}, Progress: {Progress:P2}, Status: {Status}";
     }
 }
+
 /// <summary>
-/// States representing the rendering progress.
+/// States representing the progress of a rendering process.
 /// </summary>
 public enum RenderProgressStates
 {
+    /// <summary>
+    /// The rendering process has not started yet.
+    /// </summary>
     NotStarted,
+
+    /// <summary>
+    /// The rendering process is in the initialization stage.
+    /// </summary>
     Initializing,
-    LoadingAssets,
-    Rendering,
-    PostProcessing,
-    Finalizing,
+
+    /// <summary>
+    /// The rendering process is initialized and ready to start.
+    /// </summary>
+    Ready,
+
+    /// <summary>
+    /// The rendering process is currently in progress.
+    /// </summary>
+    Processing,
+
+    /// <summary>
+    /// The rendering process has completed successfully.
+    /// </summary>
     Completed,
+
+    /// <summary>
+    /// The rendering process encountered an error and failed.
+    /// </summary>
     Failed,
+
+    /// <summary>
+    /// The rendering process was canceled before completion.
+    /// </summary>
     Canceled
 }

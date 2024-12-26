@@ -1,7 +1,6 @@
 ﻿using SkiaSharp;
 using Textile.Colors;
 using Textile.Common;
-using Textile.Data;
 using Textile.Interfaces;
 using TextileEditor.Shared.View.Common;
 
@@ -14,11 +13,11 @@ public abstract class TextileIntersectionRenderer<TIndex, TValue> : ITextileEdit
 
     protected abstract void RenderIntersection(SKSurface surface, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ITextileEditorViewConfigure configure, TIndex index);
 
-    public async Task<RenderProgress> RenderAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ITextileEditorViewConfigure configure, CancellationToken token, IProgress<RenderProgress> progress, RenderProgress currentProgress) => await Task.Run(() => Render(surface, info, structure, textile, configure, token, progress, currentProgress));
+    public async Task<RenderProgress> RenderAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ITextileEditorViewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token) => await Task.Run(() => Render(surface, info, structure, textile, configure, token, progress, currentProgress));
     public RenderProgress Render(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ITextileEditorViewConfigure configure, CancellationToken token, IProgress<RenderProgress> progress, RenderProgress currentProgress)
     {
         var setting = configure.GridSize.ToSettings(textile);
-        currentProgress = currentProgress with { MaxStep = GetMaxStep(textile), Status = RenderProgressStates.Rendering };
+        currentProgress = currentProgress with { MaxStep = GetMaxStep(textile) };
         int step = 0;
         foreach (var index in textile.Indices)
         {
@@ -29,11 +28,11 @@ public abstract class TextileIntersectionRenderer<TIndex, TValue> : ITextileEdit
         return currentProgress with { Step = step };
     }
 
-    public async Task<RenderProgress> UpdateDifferencesAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ReadOnlyMemory<ChangedValue<TIndex, TValue>> changedValues, ITextileEditorViewConfigure configure, CancellationToken token, IProgress<RenderProgress> progress, RenderProgress currentProgress) => await Task.Run(() => UpdateDifferences(surface, info, structure, textile, changedValues, configure, token, progress, currentProgress));
+    public async Task<RenderProgress> UpdateDifferencesAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ReadOnlyMemory<ChangedValue<TIndex, TValue>> changedValues, ITextileEditorViewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token) => await Task.Run(() => UpdateDifferences(surface, info, structure, textile, changedValues, configure, token, progress, currentProgress));
     public RenderProgress UpdateDifferences(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ReadOnlyMemory<ChangedValue<TIndex, TValue>> changedValues, ITextileEditorViewConfigure configure, CancellationToken token, IProgress<RenderProgress> progress, RenderProgress currentProgress)
     {
         var setting = configure.GridSize.ToSettings(textile);
-        currentProgress = currentProgress with { MaxStep = GetMaxStep(textile), Status = RenderProgressStates.Rendering };
+        currentProgress = currentProgress with { MaxStep = GetMaxStep(textile) };
         int step = 0;
         for (int i = 0; i < changedValues.Length; i++)
         {

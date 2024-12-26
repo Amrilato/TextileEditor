@@ -1,5 +1,6 @@
 ﻿using R3;
 using SkiaSharp;
+using System.Collections.Concurrent;
 using Textile.Colors;
 using Textile.Common;
 using Textile.Interfaces;
@@ -27,16 +28,16 @@ public class TextilePreviewContext : IDisposable
 }
 
 
-file class TextilePreviewPainter : IPainter, IProgress<RenderProgress>, IDisposable
+file class TextilePreviewPainter : Painter, IProgress<RenderProgress>, IDisposable
 {
-    private readonly Lock _lockObj = new();
+    protected readonly Lock renderTaskLock = new();
     private Task renderTask = Task.FromException(new TaskCanceledException());
-    private readonly Queue<ChangedValue<TextileIndex, bool>[]> TextileChangedValueQueue = new();
-    private readonly Queue<ChangedValue<int, Color>[]> HeddleChangedValueQueue = new();
-    private readonly Queue<ChangedValue<int, Color>[]> PedalChangedValueQueue = new();
+    private readonly ConcurrentQueue<ChangedValue<TextileIndex, bool>[]> TextileChangedValueQueue = new();
+    private readonly ConcurrentQueue<ChangedValue<int, Color>[]> HeddleChangedValueQueue = new();
+    private readonly ConcurrentQueue<ChangedValue<int, Color>[]> PedalChangedValueQueue = new();
 
-    private readonly ManagedMemorySKSurface fragmentPainter = new();
-    private readonly ManagedMemorySKSurface surfacePainter = new();
+    private readonly IManagedMemorySKSurface fragmentPainter = ManagedMemorySKSurface.Create();
+    private readonly IManagedMemorySKSurface surfacePainter = ManagedMemorySKSurface.Create();
     private readonly ITextilePreviewRenderPipeline pipeline;
     private readonly IReadOnlyTextileStructure structure;
     private readonly INotifyPropertyTextilePreviewConfigure configure;
@@ -44,9 +45,9 @@ file class TextilePreviewPainter : IPainter, IProgress<RenderProgress>, IDisposa
 
     private readonly ReactiveProperty<RenderProgress> renderProgress = new();
 
-    public ReadOnlyReactiveProperty<RenderProgress> RenderProgress => renderProgress;
+    public override ReadOnlyReactiveProperty<RenderProgress> RenderProgress => renderProgress;
 
-    public SKSizeI CanvasSize => new(configure.PixelSize.Width * structure.Textile.Width * configure.RepeatHorizontal, configure.PixelSize.Height * structure.Textile.Height * configure.RepeatVertical);
+    public override SKSizeI CanvasSize => new(configure.PixelSize.Width * structure.Textile.Width * configure.RepeatHorizontal, configure.PixelSize.Height * structure.Textile.Height * configure.RepeatVertical);
     private SKSizeI FragmentSize => new(configure.PixelSize.Width * structure.Textile.Width, configure.PixelSize.Height * structure.Textile.Height);
 
 
@@ -64,63 +65,59 @@ file class TextilePreviewPainter : IPainter, IProgress<RenderProgress>, IDisposa
         disposableBag.Add(this);
     }
 
-    private async void Configure_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void Configure_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         switch (e.PropertyName)
         {
             case nameof(ITextilePreviewConfigure.PixelSize):
             case nameof(ITextilePreviewConfigure.RepeatHorizontal):
             case nameof(ITextilePreviewConfigure.RepeatVertical):
-                await RenderAsync(cancellationTokenSource.Token);
+                using (renderTaskLock.EnterScope())
+                {
+                   renderTask = RenderAsync(cancellationTokenSource.Token);
+                }
                 break;
             default:
                 break;
         }
     }
 
-    public async Task OnPaintSurfaceAsync(SKSurface surface, SKImageInfo info, SKImageInfo rawInfo, CancellationToken token)
+    protected override void Initialize(SKImageInfo info, CancellationToken token)
     {
         if (!info.Equals(surfacePainter.SKImageInfo))
         {
-            cancellationTokenSource.Cancel();
-            cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-            try
-            {
-                await renderTask;
-            }
-            catch (TaskCanceledException)
-            {
-
-            }
-            catch (Exception)
-            {
-                throw;
-            }
             surfacePainter.ChangeImageInfo(info);
             var fragSize = FragmentSize;
             fragmentPainter.ChangeImageInfo(info with { Width = fragSize.Width, Height = fragSize.Height });
-            var task = RenderAsync(token);
-            using (_lockObj.EnterScope())
+            using (renderTaskLock.EnterScope())
             {
-                renderTask = task;
+                renderTask = RenderAsync(token);
             }
         }
-        await renderTask;
-        if (token.IsCancellationRequested)
+        else
         {
-            renderProgress.OnNext(new(0, 0, 0, 0, RenderProgressStates.Canceled));
-            return;
+            using (renderTaskLock.EnterScope())
+            {
+                if (renderTask.IsFaulted || renderTask.IsCanceled)
+                    renderTask = RenderAsync(token);
+            }
         }
-        using SKPaint sKPaint = new();
-        using SKSurface source = surfacePainter.CreateSurface(info);
-        surface.Draw(source.Canvas, 0, 0, sKPaint);
     }
+
+    protected override void Paint(SKSurface surface, SKImageInfo info, SKImageInfo rawInfo)
+    {
+        using SKPaint sKPaint = new();
+        using var source = surfacePainter.CreateSurface(info);
+        surface.Draw(source.SKSurface.Canvas, 0, 0, sKPaint);
+        Report(new() { Status = RenderProgressStates.Completed });
+    }
+
 
     private void PedalColor_TextileStateChanged(IReadOnlyTextile<int, Color> sender, TextileStateChangedEventArgs<int, Color> eventArgs)
     {
         var buffer = new ChangedValue<int, Color>[eventArgs.ChangedIndices.Length];
         eventArgs.ChangedIndices.CopyTo(buffer);
-        using (_lockObj.EnterScope())
+        using (renderTaskLock.EnterScope())
         {
             if (renderTask.IsCompletedSuccessfully)
             {
@@ -136,7 +133,7 @@ file class TextilePreviewPainter : IPainter, IProgress<RenderProgress>, IDisposa
     {
         var buffer = new ChangedValue<int, Color>[eventArgs.ChangedIndices.Length];
         eventArgs.ChangedIndices.CopyTo(buffer);
-        using (_lockObj.EnterScope())
+        using (renderTaskLock.EnterScope())
         {
             if (renderTask.IsCompletedSuccessfully)
             {
@@ -152,7 +149,7 @@ file class TextilePreviewPainter : IPainter, IProgress<RenderProgress>, IDisposa
     {
         var buffer = new ChangedValue<TextileIndex, bool>[eventArgs.ChangedIndices.Length];
         eventArgs.ChangedIndices.CopyTo(buffer);
-        using (_lockObj.EnterScope())
+        using (renderTaskLock.EnterScope())
         {
             if (renderTask.IsCompletedSuccessfully)
             {
@@ -168,29 +165,47 @@ file class TextilePreviewPainter : IPainter, IProgress<RenderProgress>, IDisposa
     {
         if (token.IsCancellationRequested)
             return;
+
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
         try
         {
-            renderProgress.OnNext(new(0, 0, 0, 0, RenderProgressStates.Initializing));
-            using SKSurface dest = surfacePainter.CreateSurface(out var _);
-            using SKSurface frag = surfacePainter.CreateSurface(out var _);
-            var progress = await pipeline.RenderAsync(dest, surfacePainter.SKImageInfo, frag, fragmentPainter.SKImageInfo, structure, configure, this, new(0, pipeline.RenderAsyncPhase, 0, 0, RenderProgressStates.Initializing), token).ConfigureAwait(false);
+            await renderTask;
+        }
+        catch (TaskCanceledException) { }
+
+        try
+        {
+            using (progressLock.EnterScope())
+            {
+                renderProgress.OnNext(new(0, 0, 0, 0, RenderProgressStates.Initializing));
+            }
+            using var dest = surfacePainter.CreateSurface(out var _);
+            using var frag = surfacePainter.CreateSurface(out var _);
+            var progress = await pipeline.RenderAsync(dest.SKSurface, surfacePainter.SKImageInfo, frag.SKSurface, fragmentPainter.SKImageInfo, structure, configure, this, new(0, pipeline.RenderAsyncPhase, 0, 0, RenderProgressStates.Initializing), token).ConfigureAwait(false);
             progress = await UpdateDifferencesAsync(progress, token);
         }
         catch (OperationCanceledException)
         {
-            renderProgress.OnNext(new(0, 0, 0, 0, RenderProgressStates.Canceled));
+            using (progressLock.EnterScope())
+            {
+                renderProgress.OnNext(new(0, 0, 0, 0, RenderProgressStates.Canceled));
+            }
         }
         catch (Exception e)
         {
-            renderProgress.OnNext(new(0, 0, 0, 0, RenderProgressStates.Failed));
-            renderProgress.OnErrorResume(e);
+            using (progressLock.EnterScope())
+            {
+                renderProgress.OnNext(new(0, 0, 0, 0, RenderProgressStates.Failed));
+                renderProgress.OnErrorResume(e);
+            }
         }
     }
 
     private async Task<RenderProgress> UpdateDifferencesAsync(RenderProgress progress, CancellationToken token)
     {
         Task<RenderProgress>? rTask = default;
-        using (_lockObj.EnterScope())
+        using (renderTaskLock.EnterScope())
         {
             if (TextileChangedValueQueue.TryDequeue(out var tResult))
                 rTask = UpdateTextileDifferencesAsync(progress, tResult, token);
@@ -206,7 +221,10 @@ file class TextilePreviewPainter : IPainter, IProgress<RenderProgress>, IDisposa
         }
         else
         {
-            renderProgress.RenderCompleted(progress);
+            using (progressLock.EnterScope())
+            {
+                renderProgress.InitializingCompleted(progress);
+            }
             return progress;
         }
 
@@ -214,30 +232,36 @@ file class TextilePreviewPainter : IPainter, IProgress<RenderProgress>, IDisposa
         {
             using var dest = surfacePainter.CreateSurface(out var _);
             using var frag = surfacePainter.CreateSurface(out var _);
-            progress = await pipeline.UpdateDifferencesAsync(dest, surfacePainter.SKImageInfo, frag, fragmentPainter.SKImageInfo, structure, changed, configure, this, progress with { MaxPhase = pipeline.UpdateDifferencesAsyncPhase }, token);
+            progress = await pipeline.UpdateDifferencesAsync(dest.SKSurface, surfacePainter.SKImageInfo, frag.SKSurface, fragmentPainter.SKImageInfo, structure, changed, configure, this, progress with { MaxPhase = pipeline.UpdateDifferencesAsyncPhase }, token);
             return await UpdateDifferencesAsync(progress, token);
         }
         async Task<RenderProgress> UpdateHeddleDifferencesAsync(RenderProgress progress, ReadOnlyMemory<ChangedValue<int, Color>> changed, CancellationToken token)
         {
             using var dest = surfacePainter.CreateSurface(out var _);
             using var frag = surfacePainter.CreateSurface(out var _);
-            progress = await pipeline.UpdateHeddleDifferencesAsync(dest, surfacePainter.SKImageInfo, frag, fragmentPainter.SKImageInfo, structure, changed, configure, this, progress with { MaxPhase = pipeline.UpdateHeddleDifferencesAsyncPhase }, token);
+            progress = await pipeline.UpdateHeddleDifferencesAsync(dest.SKSurface, surfacePainter.SKImageInfo, frag.SKSurface, fragmentPainter.SKImageInfo, structure, changed, configure, this, progress with { MaxPhase = pipeline.UpdateHeddleDifferencesAsyncPhase }, token);
             return await UpdateDifferencesAsync(progress, token);
         }
         async Task<RenderProgress> UpdatePedalDifferencesAsync(RenderProgress progress, ReadOnlyMemory<ChangedValue<int, Color>> changed, CancellationToken token)
         {
             using var dest = surfacePainter.CreateSurface(out var _);
             using var frag = surfacePainter.CreateSurface(out var _);
-            progress = await pipeline.UpdatePedalDifferencesAsync(dest, surfacePainter.SKImageInfo, frag, fragmentPainter.SKImageInfo, structure, changed, configure, this, progress with { MaxPhase = pipeline.UpdatePedalDifferencesAsyncPhase }, token);
+            progress = await pipeline.UpdatePedalDifferencesAsync(dest.SKSurface, surfacePainter.SKImageInfo, frag.SKSurface, fragmentPainter.SKImageInfo, structure, changed, configure, this, progress with { MaxPhase = pipeline.UpdatePedalDifferencesAsyncPhase }, token);
             return await UpdateDifferencesAsync(progress, token);
         }
 
     }
-    public void Report(RenderProgress value) => renderProgress.OnNext(value);
+
+    public void Report(RenderProgress value)
+    {
+        using (progressLock.EnterScope())
+        {
+            renderProgress.OnNext(value);
+        }
+    }
 
     public void Dispose()
     {
-        renderProgress.Dispose();
         fragmentPainter.Dispose();
         surfacePainter.Dispose();
         cancellationTokenSource.Cancel();
@@ -246,5 +270,6 @@ file class TextilePreviewPainter : IPainter, IProgress<RenderProgress>, IDisposa
         structure.HeddleColor.TextileStateChanged -= HeddleColor_TextileStateChanged;
         structure.PedalColor.TextileStateChanged -= PedalColor_TextileStateChanged;
         configure.PropertyChanged -= Configure_PropertyChanged;
+        renderProgress.Dispose();
     }
 }

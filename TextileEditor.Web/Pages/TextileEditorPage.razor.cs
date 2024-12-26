@@ -2,12 +2,10 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using SkiaSharp;
-using TextileEditor.Shared.Painters;
 using TextileEditor.Shared.Services;
-using TextileEditor.Shared.Services.TextileSessionStorage;
-using TextileEditor.Shared.Shared.Common;
+using TextileEditor.Shared.View.TextileEditor;
 using TextileEditor.Web.Layout;
-using TextileEditor.Web.Localization;
+using TextileEditor.Web.Services;
 
 namespace TextileEditor.Web.Pages;
 
@@ -16,19 +14,18 @@ public partial class TextileEditorPage : IDisposable
     private TextileSession? watchSession;
 
     [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
+    public required ILocalizer Localizer { get; init; }
     [Inject]
     public required IMessageService MessageService { get; init; }
     [Inject]
     public required ITextileSessionStorage Storage { get; init; }
     [Inject]
-    public required IEditorConfigure EditorConfigure { get; init; }
+    public required IAppSettings AppSettings { get; init; }
     private readonly IEnumerable<Corner> Corners = Enum.GetValues<Corner>();
 
 
-    private TextileContextManager? previousTextileContextManager;
-    [CascadingParameter(Name = CascadingParameterNames.TextileContextManager)]
-    public TextileContextManager? TextileContextManager { get; set; }
+    [CascadingParameter(Name = CascadingParameterNames.Session)]
+    public TextileSession? Session { get; set; }
 
     private void OnColorChanged(ChangeEventArgs e)
     {

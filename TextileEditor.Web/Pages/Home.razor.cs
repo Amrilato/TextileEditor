@@ -17,7 +17,7 @@ public partial class Home
     public required IMessageService MessageService { get; init; }
 
 
-    [CascadingParameter(Name = CascadingParameterNames.TextileContextManager)]
+    [CascadingParameter(Name = CascadingParameterNames.Session)]
     public TextileContextManager? TextileContextManager { get; set; }
     private ConcurrencyBackgroundWorkContext? ConcurrencyBackgroundWorkContext { get; set; }
     private QueueBackgroundWorkContext? QueueBackgroundWorkContext { get; set; }

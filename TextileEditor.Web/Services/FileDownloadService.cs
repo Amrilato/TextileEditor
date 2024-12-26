@@ -1,9 +1,5 @@
-﻿using DotNext.Buffers;
-using MessagePack;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 using System.Runtime.InteropServices;
-using TextileEditor.Shared.Common;
-using TextileEditor.Shared.Services;
 
 namespace TextileEditor.Web.Services;
 
@@ -37,27 +33,21 @@ public class FileDownloadService(IJSRuntime jSRuntime) : IAsyncDisposable
         }
     }
 
-    public async ValueTask<string> CreateBlobUrlAsync(TextileSession session)
+    public async ValueTask<string> CreateBlobUrlAsync(byte[] binaryData)
     {
         await EnsureInitializedAsync();
-        PoolingArrayBufferWriter<byte> binaryBuffer = [];
-        TextileSessionSerializer.Serialize(session, binaryBuffer);
-        var binaryData = binaryBuffer.ToArray();
         var handle = GCHandle.Alloc(binaryData, GCHandleType.Pinned);
         var identifier = await _fileDownloader!.InvokeAsync<string>("createBlobUrl", handle.AddrOfPinnedObject().ToInt64(), binaryData.Length);
         Handles.Add(identifier, handle);
         return identifier;
     }
 
-    public async ValueTask DownloadAsync(TextileSession session, TextileFileExtensions extension = TextileFileExtensions.bin)
+    public async ValueTask DownloadAsync(byte[] binaryData, string name, string extension)
     {
         await EnsureInitializedAsync();
-        PoolingArrayBufferWriter<byte> binaryBuffer = [];
-        TextileSessionSerializer.Serialize(session, binaryBuffer);
-        var binaryData = binaryBuffer.ToArray();
         var handle = GCHandle.Alloc(binaryData, GCHandleType.Pinned);
         var identifier = await _fileDownloader!.InvokeAsync<string>("createBlobUrl", handle.AddrOfPinnedObject().ToInt64(), binaryData.Length);
-        await _fileDownloader!.InvokeVoidAsync("downloadFile", $"{session.Name}.{extension}", identifier);
+        await _fileDownloader!.InvokeVoidAsync("downloadFile", $"{name}.{extension}", identifier);
         await _fileDownloader!.InvokeVoidAsync("revokeUrl", identifier);
         handle.Free();
     }
@@ -86,8 +76,6 @@ public class FileDownloadService(IJSRuntime jSRuntime) : IAsyncDisposable
             await _module.DisposeAsync();
         if (_fileDownloader is not null)
             await _fileDownloader.DisposeAsync();
-        foreach (var (_, handle) in Handles)
-            handle.Free();
-        Handles.Clear();
+        await ClearAsync();
     }
 }

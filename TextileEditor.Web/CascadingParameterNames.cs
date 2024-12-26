@@ -2,5 +2,5 @@
 
 public static class CascadingParameterNames
 {
-    public const string TextileContextManager = nameof(TextileContextManager);
+    public const string Session = nameof(Session);
 }

@@ -1,12 +1,11 @@
 ﻿using SkiaSharp;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using TextileEditor.Shared.Services;
-using TextileEditor.Shared.Shared.Common;
+using TextileEditor.Shared.View.TextileEditor;
 
-namespace TextileEditor.Web.Services;
+namespace TextileEditor.Web.Services.BackwardCompatibility;
 
-public class EditorConfigure(IWebStorageService webStorageService) : IEditorConfigure
+public class EditorConfigure(IWebStorage webStorageService)
 {
     private SKColor borderColor;
     private SKColor selectBorderColor;
@@ -45,30 +44,30 @@ public class EditorConfigure(IWebStorageService webStorageService) : IEditorConf
     }
     public GridSize GridSize
     {
-        get => gridSize; 
+        get => gridSize;
         set => InvokePropertyChanged(ref gridSize, value);
     }
     public int PreviewHorizontalRepeat
     {
         get => previewHorizontalRepeat;
-        set => InvokePropertyChanged(ref  previewHorizontalRepeat, value);  
+        set => InvokePropertyChanged(ref previewHorizontalRepeat, value);
     }
     public int PreviewVerticalRepeat
     {
         get => previewVerticalRepeat;
-        set => InvokePropertyChanged(ref  previewVerticalRepeat, value);
+        set => InvokePropertyChanged(ref previewVerticalRepeat, value);
     }
     public SKSizeI PreviewPixelSize
     {
         get => previewPixelSize;
-        set => InvokePropertyChanged(ref  previewPixelSize, value);
+        set => InvokePropertyChanged(ref previewPixelSize, value);
     }
 
 
     public event PropertyChangedEventHandler? PropertyChanged;
-    private void InvokePropertyChanged<T>(ref T field, T value, [CallerMemberName]string propertyName = "")
+    private void InvokePropertyChanged<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
     {
-        if(EqualityComparer<T>.Default.Equals(field, value))
+        if (EqualityComparer<T>.Default.Equals(field, value))
             return;
         field = value;
         PropertyChanged?.Invoke(this, new(propertyName));

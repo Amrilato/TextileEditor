@@ -14,11 +14,11 @@ public class TextileBorderRenderer<TIndex, TValue> : ITextileEditorViewRenderer<
     [ThreadStatic]
     protected readonly static SKPaint SKPaint;
 
-    public async Task<RenderProgress> RenderAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ITextileEditorViewConfigure configure, CancellationToken token, IProgress<RenderProgress> progress, RenderProgress currentProgress) => await Task.Run(() => Render(surface, info, structure, textile, configure, token, progress, currentProgress));
+    public async Task<RenderProgress> RenderAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ITextileEditorViewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token) => await Task.Run(() => Render(surface, info, structure, textile, configure, token, progress, currentProgress));
     public RenderProgress Render(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ITextileEditorViewConfigure configure, CancellationToken token, IProgress<RenderProgress> progress, RenderProgress currentProgress)
     {
         SKPaint.Color = configure.BorderColor;
-        currentProgress = currentProgress with { MaxStep = GetMaxStep(textile), Status = RenderProgressStates.Rendering };
+        currentProgress = currentProgress with { MaxStep = GetMaxStep(textile) };
         int step = 0;
         var settings = configure.GridSize.ToSettings(textile);
         for (int column = 0; column < textile.Width + 1; column++)
@@ -39,5 +39,5 @@ public class TextileBorderRenderer<TIndex, TValue> : ITextileEditorViewRenderer<
         return currentProgress with { Step = step };
     }
 
-    public Task<RenderProgress> UpdateDifferencesAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ReadOnlyMemory<ChangedValue<TIndex, TValue>> changedValues, ITextileEditorViewConfigure configure, CancellationToken token, IProgress<RenderProgress> progress, RenderProgress currentProgress) => RenderAsync(surface, info, structure, textile, configure, token, progress, currentProgress);
+    public Task<RenderProgress> UpdateDifferencesAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ReadOnlyMemory<ChangedValue<TIndex, TValue>> changedValues, ITextileEditorViewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token) => RenderAsync(surface, info, structure, textile, configure, progress, currentProgress, token);
 }

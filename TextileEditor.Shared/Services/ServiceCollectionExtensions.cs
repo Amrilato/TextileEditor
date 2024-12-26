@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using TextileEditor.Shared.Services.Internal;
 using TextileEditor.Shared.View.TextileEditor.Pipeline;
 using TextileEditor.Shared.View.TextilePreview.Pipeline;
 

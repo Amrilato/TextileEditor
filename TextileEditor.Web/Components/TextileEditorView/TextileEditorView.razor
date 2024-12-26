@@ -1,19 +1,19 @@
 ﻿@namespace TextileEditor.Web.Components
 @using TextileEditor.Shared.Shared.Common
 
-@if (Painters is not null && Painters.AlreadyRender)
+@if (Context is not null && Context.AlreadyRender)
 {
     <div id="container">
-        <Canvas SKSurfacePainter="Painters.TextilePainter" EventHandlers="Painters.TextileEventHandler" Size="Painters.TextileCanvasSize" Style="@GridAreaTemplate.GetAreaTemplate(Painters.Session.TieupPosition).Textile" />
-        <Canvas SKSurfacePainter="Painters.HeddlePainter" EventHandlers="Painters.HeddleEventHandler" Size="Painters.HeddleCanvasSize" Style="@GridAreaTemplate.GetAreaTemplate(Painters.Session.TieupPosition).Heddle" />
-        <Canvas SKSurfacePainter="Painters.PedalPainter" EventHandlers="Painters.PedalEventHandler" Size="Painters.PedalCanvasSize" Style="@GridAreaTemplate.GetAreaTemplate(Painters.Session.TieupPosition).Pedal" />
-        <Canvas SKSurfacePainter="Painters.TieupPainter" EventHandlers="Painters.TieupEventHandler" Size="Painters.TieupCanvasSize" Style="@GridAreaTemplate.GetAreaTemplate(Painters.Session.TieupPosition).Tieup" />
+        <Canvas Painter="Context.Textile" EventHandler="Context.Textile" Style="@GridAreaTemplate.GetAreaTemplate(Context.Session.TieupPosition).Textile" />
+        <Canvas Painter="Context.Heddle" EventHandler="Context.Heddle" Style="@GridAreaTemplate.GetAreaTemplate(Context.Session.TieupPosition).Heddle" />
+        <Canvas Painter="Context.Pedal" EventHandler="Context.Pedal" Style="@GridAreaTemplate.GetAreaTemplate(Context.Session.TieupPosition).Pedal" />
+        <Canvas Painter="Context.Tieup" EventHandler="Context.Tieup" Style="@GridAreaTemplate.GetAreaTemplate(Context.Session.TieupPosition).Tieup" />
 
-        <Canvas SKSurfacePainter="Painters.HeddleColorPainter" EventHandlers="Painters.HeddleColorEventHandler" Size="Painters.HeddleColorCanvasSize" Style="@GridAreaTemplate.GetAreaTemplate(Painters.Session.TieupPosition).HeddleColor" />
-        <Canvas SKSurfacePainter="Painters.PedalColorPainter" EventHandlers="Painters.PedalColorEventHandler" Size="Painters.PedalColorCanvasSize" Style="@GridAreaTemplate.GetAreaTemplate(Painters.Session.TieupPosition).PedalColor" />
+        <Canvas Painter="Context.HeddleColor" EventHandler="Context.HeddleColor" Style="@GridAreaTemplate.GetAreaTemplate(Context.Session.TieupPosition).HeddleColor" />
+        <Canvas Painter="Context.PedalColor" EventHandler="Context.PedalColor" Style="@GridAreaTemplate.GetAreaTemplate(Context.Session.TieupPosition).PedalColor" />
     </div>
 }
-else if (Painters is not null && !Painters.AlreadyRender)
+else if (Context is not null && !Context.AlreadyRender)
 {
     <FluentStack Style="height: 100%" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" @onclick="InvokeStateHasChange">
         <FluentProgressRing style="width: 128px; height: 128px;"></FluentProgressRing>

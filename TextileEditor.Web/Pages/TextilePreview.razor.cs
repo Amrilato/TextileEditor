@@ -15,7 +15,7 @@ public partial class TextilePreview : IDisposable
     public required IBackgroundWorkerService BackgroundWorkerService { get; init; }
 
     private TextileContextManager? previousTextileEditorContext;
-    [CascadingParameter(Name = CascadingParameterNames.TextileContextManager)]
+    [CascadingParameter(Name = CascadingParameterNames.Session)]
     public TextileContextManager? TextileEditorContext { get; set; }
 
     public ITextilePreviewContext? TextilePreviewContext => TextileEditorContext?.TextilePreviewContext;

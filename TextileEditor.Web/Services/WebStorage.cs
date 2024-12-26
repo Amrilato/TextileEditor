@@ -2,7 +2,7 @@
 
 namespace TextileEditor.Web.Services;
 
-public class WebStorageService(IJSRuntime jsRuntime) : IAsyncDisposable, IWebStorageService
+public class WebStorage(IJSRuntime jsRuntime) : IAsyncDisposable, IWebStorage
 {
     private readonly IJSRuntime _jsRuntime = jsRuntime;
     private IJSObjectReference? _module;
@@ -31,25 +31,25 @@ public class WebStorageService(IJSRuntime jsRuntime) : IAsyncDisposable, IWebSto
         }
     }
 
-    public async ValueTask SetItemAsync(string key, string value)
+    public async Task SetItemAsync(string key, string value)
     {
         await EnsureInitializedAsync();
         await _localStorageInstance!.InvokeVoidAsync("setItem", key, value);
     }
 
-    public async ValueTask<string?> GetItemAsync(string key)
+    public async Task<string?> GetItemAsync(string key)
     {
         await EnsureInitializedAsync();
         return await _localStorageInstance!.InvokeAsync<string?>("getItem", key);
     }
 
-    public async ValueTask RemoveItemAsync(string key)
+    public async Task RemoveItemAsync(string key)
     {
         await EnsureInitializedAsync();
         await _localStorageInstance!.InvokeVoidAsync("removeItem", key);
     }
 
-    public async ValueTask ClearAsync()
+    public async Task ClearAsync()
     {
         await EnsureInitializedAsync();
         await _localStorageInstance!.InvokeVoidAsync("clear");

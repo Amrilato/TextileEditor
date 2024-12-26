@@ -7,6 +7,7 @@ using TextileEditor.Shared.View.TextilePreview.Pipeline;
 using DotNext.Buffers;
 using System.Buffers;
 using TextileEditor.Shared.Serialization.Textile;
+using TextileEditor.Shared.Common.Logger;
 
 namespace TextileEditor.Shared.Services;
 
@@ -42,13 +43,15 @@ public class TextileSession
     internal TextileSession(TextileData textileData, IAppSettings appSettings, ITextileEditorViewRenderPipelineProvider textileEditorViewRenderPipelineProvider, ITextilePreviewRenderPipelineProvider textilePreviewRenderPipelineProvider)
     {
         TextileData = textileData ?? throw new ArgumentNullException(nameof(textileData));
+        Logger = new(textileData);
         TextileEditorViewContext = new(textileData.TextileStructure, textileEditorViewRenderPipelineProvider, appSettings);
         TextilePreviewContext = new(textilePreviewRenderPipelineProvider, textileData.TextileStructure, appSettings);
     }
 
     public TextileData TextileData { get; }
-    public TextileEditorViewContext TextileEditorViewContext { get; init; }
-    public TextilePreviewContext TextilePreviewContext { get; init; }
+    public TextileLogger Logger { get; }
+    public TextileEditorViewContext TextileEditorViewContext { get; }
+    public TextilePreviewContext TextilePreviewContext { get; }
 }
 
 internal class TextileSessionStorage(IDataStorage dataStorage, IAppSettings appSettings, ITextileEditorViewRenderPipelineProvider textileEditorViewRenderPipelineProvider, ITextilePreviewRenderPipelineProvider textilePreviewRenderPipelineProvider) : ITextileSessionStorage

@@ -1,6 +1,7 @@
 ﻿@page "/edit"
 @using TextileEditor.Shared.EventHandlers
 @using TextileEditor.Shared.Shared.Common
+@using TextileEditor.Shared.View.TextileEditor.EventHandler
 
 <FluentStack Style="height: 100%" Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Left" VerticalAlignment="VerticalAlignment.Top">
     @if (TextileContextManager is not null)
@@ -28,7 +29,7 @@
                           Placeholder="Select a Tieup Position..."
                           OptionValue="@(p => p.ToString())"
                           OptionText="@(p => p.ToString())"
-                          @bind-SelectedOption="@EditorConfigure.TieupPosition"/>
+                          @bind-SelectedOption="@AppSettings.TieupPosition"/>
             <FluentDivider Role="DividerRole.Presentation" Orientation="Orientation.Vertical" />
             <FluentButton IconStart="@(new Icons.Regular.Size20.DrawImage())" Title="@Localizer[SharedResource.BuildSettingsToTextile]" OnClick="BuildOtherToTextile" />
             <FluentButton IconStart="@(new Icons.Regular.Size20.DrawShape())" Title="@Localizer[SharedResource.BuildTextileToSettings]" OnClick="BuildTextileToOther" />

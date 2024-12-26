@@ -5,14 +5,15 @@ using System.ComponentModel;
 using TextileEditor.Shared.Serialization.Configuration;
 using TextileEditor.Shared.View.TextileEditor;
 
-namespace TextileEditor.Shared.Services;
+namespace TextileEditor.Shared.Services.Internal;
 
 internal class LazyAppSettings(IDataStorage dataStorage) : IAppSettings
 {
 
     private static async Task<AppSettings?> LoadAsync(IDataStorage dataStorage)
     {
-        return AppSettingsSerializer.Deserialize((await dataStorage.LoadAsync(AppSettingKey)).AsMemory());
+        using var owner = await dataStorage.LoadAsync(AppSettingKey);
+        return owner is not null ? AppSettingsSerializer.Deserialize(owner.Memory) : null;
     }
     private static TimeSpan Timeout => TimeSpan.FromSeconds(1);
     private const string AppSettingKey = nameof(AppSettings);

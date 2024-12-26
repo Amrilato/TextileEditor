@@ -1,4 +1,6 @@
-﻿namespace TextileEditor.Shared.Shared.Common;
+﻿using TextileEditor.Shared.View.TextileEditor;
+
+namespace TextileEditor.Shared.Shared.Common;
 
 public readonly record struct GridAreaTemplate(string Textile, string Pedal, string Heddle, string Tieup, string PedalColor, string HeddleColor)
 {
