@@ -1,6 +1,6 @@
 ﻿using MessagePack;
 using MessagePack.Formatters;
-using TextileEditor.Shared.View.TextileEditor;
+using TextileEditor.Shared.View.Common;
 
 namespace TextileEditor.Shared.Serialization.MessagePackFormatters;
 

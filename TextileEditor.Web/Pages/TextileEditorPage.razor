@@ -1,24 +1,24 @@
 ﻿@page "/edit"
-@using TextileEditor.Shared.EventHandlers
 @using TextileEditor.Shared.Shared.Common
+@using TextileEditor.Shared.View.Common
 @using TextileEditor.Shared.View.TextileEditor.EventHandler
 
 <FluentStack Style="height: 100%" Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Left" VerticalAlignment="VerticalAlignment.Top">
-    @if (TextileContextManager is not null)
+    @if (Session is not null)
     {
         <FluentStack>
-            <FluentButton IconStart="@(new Icons.Regular.Size20.CalligraphyPen())" Title="@Localizer[SharedResource.ClickToInvert]" Disabled="@(TextileContextManager.TextileGridEventHandler is TextileClickEventHandler)" OnClick="() => TextileContextManager?.SetEventHandler<TextileClickEventHandler>()" />
-            <FluentButton IconStart="@(new Icons.Regular.Size20.CopySelect())" Title="@Localizer[SharedResource.SelectCopyRange]" Disabled="@(TextileContextManager.TextileGridEventHandler is TextileRangeSelectEventHandler)" OnClick="() => TextileContextManager?.SetEventHandler<TextileRangeSelectEventHandler>()" />
-            <FluentButton IconStart="@(new Icons.Regular.Size20.ClipboardPaste())" Title="@Localizer[SharedResource.Paste]" Disabled="@(TextileContextManager.TextileGridEventHandler is TextilePasteEventHandler)" OnClick="() => TextileContextManager?.SetEventHandler<TextilePasteEventHandler>()" />
-            <FluentButton IconStart="@(new Icons.Regular.Size20.Eraser())" Title="@Localizer[SharedResource.ClearTextile]" Disabled="@(TextileContextManager.TextileGridEventHandler is TextileClearEventHandler)" OnClick="() => TextileContextManager?.SetEventHandler<TextileClearEventHandler>()" />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.CalligraphyPen())" Title="@Localizer.GetString(SharedResource.ClickToInvert)" Disabled="@(Session is not null && Session.TextileEditorViewContext.TextileEditorEventHandler.Handler is TextileClickEventHandler)" OnClick="() => Session?.TextileEditorViewContext.TextileEditorEventHandler.SetHandler<TextileClickEventHandler>()" />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.CopySelect())" Title="@Localizer.GetString(SharedResource.SelectCopyRange)" Disabled="@(Session is not null && Session.TextileEditorViewContext.TextileEditorEventHandler.Handler is TextileRangeSelectEventHandler)" OnClick="() => Session?.TextileEditorViewContext.TextileEditorEventHandler.SetHandler<TextileRangeSelectEventHandler>()" />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.ClipboardPaste())" Title="@Localizer.GetString(SharedResource.Paste)" Disabled="@(Session is not null && Session.TextileEditorViewContext.TextileEditorEventHandler.Handler is TextilePasteEventHandler)" OnClick="() => Session?.TextileEditorViewContext.TextileEditorEventHandler.SetHandler<TextilePasteEventHandler>()" />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.Eraser())" Title="@Localizer.GetString(SharedResource.ClearTextile)" Disabled="@(Session is not null && Session.TextileEditorViewContext.TextileEditorEventHandler.Handler is TextileClearEventHandler)" OnClick="() => Session?.TextileEditorViewContext.TextileEditorEventHandler.SetHandler<TextileClearEventHandler>()" />
             <FluentDivider Role="DividerRole.Presentation" Orientation="Orientation.Vertical" />
-            <FluentButton IconStart="@(new Icons.Regular.Size20.Color())" Title="@Localizer[SharedResource.ClickToSetColor]" Disabled="@(TextileContextManager.TextileColorGridEventHandler is TextileColorClickEventHandler)" OnClick="() => TextileContextManager?.SetEventHandler<TextileColorClickEventHandler>()" />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.Color())" Title="@Localizer.GetString(SharedResource.ClickToSetColor)" Disabled="@(Session is not null && Session.TextileEditorViewContext.TextileEditorColorEventHandler.Handler is TextileColorClickEventHandler)" OnClick="() => Session?.TextileEditorViewContext.TextileEditorColorEventHandler.SetHandler<TextileColorClickEventHandler>()" />
             <input id="colorPicker" type="color" @onchange="OnColorChanged" />
             <FluentDivider />
             <FluentDivider Role="DividerRole.Presentation" Orientation="Orientation.Vertical" />
-            <FluentButton IconStart="@(new Icons.Regular.Size20.Copy())" Title="@Localizer[SharedResource.Copy]" Disabled="@(TextileContextManager.TextileGridEventHandler is not TextileRangeSelectEventHandler)" OnClick="() => TextileContextManager.CopyClipboard()" />
-            <FluentButton IconStart="@(new Icons.Regular.Size20.ArrowRedo())" Title="@Localizer[SharedResource.Redo]" Disabled="@(!TextileContextManager.TextileEditorContext.Session.Logger.CanRedo())" OnClick="() => TextileContextManager.TextileEditorContext.Session.Logger.TryRedo()" />
-            <FluentButton IconStart="@(new Icons.Regular.Size20.ArrowUndo())" Title="@Localizer[SharedResource.Undo]" Disabled="@(!TextileContextManager.TextileEditorContext.Session.Logger.CanUndo())" OnClick="() => TextileContextManager.TextileEditorContext.Session.Logger.TryUndo()" />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.Copy())" Title="@Localizer.GetString(SharedResource.Copy)" Disabled="@(Session is not null && Session.TextileEditorViewContext.TextileEditorEventHandler.Handler is not TextileRangeSelectEventHandler)" OnClick="CopyClipboard" />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.ArrowRedo())" Title="@Localizer.GetString(SharedResource.Redo)" Disabled="@(!(Session is not null && Session.Logger.CanRedo()))" OnClick="() => Session?.Logger.TryRedo()" />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.ArrowUndo())" Title="@Localizer.GetString(SharedResource.Undo)" Disabled="@(!(Session is not null && Session.Logger.CanUndo()))" OnClick="() => Session?.Logger.TryUndo()" />
             <FluentDivider Role="DividerRole.Presentation" Orientation="Orientation.Vertical" />
             <FluentSelect TOption="Corner"
                           AriaLabel="Select a Tieup Position"
@@ -29,12 +29,18 @@
                           Placeholder="Select a Tieup Position..."
                           OptionValue="@(p => p.ToString())"
                           OptionText="@(p => p.ToString())"
-                          @bind-SelectedOption="@AppSettings.TieupPosition"/>
+                          @bind-SelectedOption="@AppSettings.TieupPosition" />
             <FluentDivider Role="DividerRole.Presentation" Orientation="Orientation.Vertical" />
-            <FluentButton IconStart="@(new Icons.Regular.Size20.DrawImage())" Title="@Localizer[SharedResource.BuildSettingsToTextile]" OnClick="BuildOtherToTextile" />
-            <FluentButton IconStart="@(new Icons.Regular.Size20.DrawShape())" Title="@Localizer[SharedResource.BuildTextileToSettings]" OnClick="BuildTextileToOther" />
-            <FluentButton IconStart="@(new Icons.Regular.Size20.SaveEdit())" Title="@Localizer[SharedResource.SaveLocalStorage]" OnClick="SaveSession" />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.DrawImage())" Title="@Localizer.GetString(SharedResource.BuildSettingsToTextile)" OnClick="BuildOtherToTextile" />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.DrawShape())" Title="@Localizer.GetString(SharedResource.BuildTextileToSettings)" OnClick="BuildTextileToOther" />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.SaveEdit())" Title="@Localizer.GetString(SharedResource.SaveLocalStorage)" OnClick="SaveSession" />
+        </FluentStack>
+        <TextileEditor.Web.Components.TextileEditorView Context="Session?.TextileEditorViewContext" />
+    }
+    else
+    {
+        <FluentStack Style="height: 100%" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" @onclick="StateHasChanged">
+            @Localizer.GetString(SharedResource.NotSelectedTextile)
         </FluentStack>
     }
-    <TextileEditor.Web.Components.TextileEditorView Painters="TextileContextManager?.TextileEditorContext" />
 </FluentStack>

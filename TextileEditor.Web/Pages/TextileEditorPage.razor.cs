@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using SkiaSharp;
 using TextileEditor.Shared.Services;
-using TextileEditor.Shared.View.TextileEditor;
+using TextileEditor.Shared.View.Common;
+using TextileEditor.Shared.View.TextileEditor.EventHandler;
 using TextileEditor.Web.Layout;
 using TextileEditor.Web.Services;
 
@@ -22,7 +22,7 @@ public partial class TextileEditorPage : IDisposable
     [Inject]
     public required IAppSettings AppSettings { get; init; }
     private readonly IEnumerable<Corner> Corners = Enum.GetValues<Corner>();
-
+    
 
     [CascadingParameter(Name = CascadingParameterNames.Session)]
     public TextileSession? Session { get; set; }
@@ -31,22 +31,18 @@ public partial class TextileEditorPage : IDisposable
     {
         // Handle color change event
         var selectedColor = e.Value?.ToString();
-        if (SKColor.TryParse(selectedColor, out SKColor color))
-            TextileContextManager?.SetTextileColorClickValue(color);
+        if (SKColor.TryParse(selectedColor, out SKColor color) && Session is not null)
+        {
+            Session.TextileEditorViewContext.TextileEditorColorEventHandler.SetHandler<TextileColorClickEventHandler>().Color = color;
+        }
+
     }
 
-    protected override void OnParametersSet()
+    public void CopyClipboard()
     {
-        if (previousTextileContextManager != TextileContextManager)
+        if (Session is not null)
         {
-            if (TextileContextManager is not null)
-            {
-                TextileContextManager.TextileEditorContext.PropertyChanged += Painters_PropertyChanged;
-                UpdateSession();
-            }
-            if (previousTextileContextManager is not null)
-                previousTextileContextManager.TextileEditorContext.PropertyChanged -= Painters_PropertyChanged;
-            previousTextileContextManager = TextileContextManager;
+            Session.TextileEditorViewContext.TextileEditorEventHandler.GetHandler<TextilePasteEventHandler>().Clipboard = Session.TextileEditorViewContext.TextileEditorEventHandler.GetHandler<TextileRangeSelectEventHandler>().Clip();
         }
     }
 
@@ -54,35 +50,23 @@ public partial class TextileEditorPage : IDisposable
     {
         if (watchSession is not null)
             watchSession.Logger.LoggerStateChanged -= Logger_LoggerStateChanged;
-        if(TextileContextManager is not null)
+        if(Session is not null)
         {
-            watchSession = TextileContextManager.TextileEditorContext.Session;
+            watchSession = Session;
             watchSession.Logger.LoggerStateChanged += Logger_LoggerStateChanged;
         }
     }
 
     private void Logger_LoggerStateChanged() => InvokeAsync(StateHasChanged);
 
-    private void Painters_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        switch (e.PropertyName)
-        {
-            case nameof(ITextileEditorContext.Session):
-                UpdateSession();
-                break;
-            default:
-                break;
-        }
-    }
-
     private void BuildTextileToOther()
     {
-        if (TextileContextManager is null)
+        if (Session is null)
             return;
 
         try
         {
-            TextileContextManager.TextileEditorContext.Session.TextileStructure.BuildTextileToOther();
+            Session.TextileData.TextileStructure.BuildTextileToOther();
         }
         catch (Exception e)
         {
@@ -92,12 +76,12 @@ public partial class TextileEditorPage : IDisposable
 
     private void BuildOtherToTextile()
     {
-        if (TextileContextManager is null)
+        if (Session is null)
             return;
 
         try
         {
-            TextileContextManager.TextileEditorContext.Session.TextileStructure.BuildOtherToTextile();
+            Session.TextileData.TextileStructure.BuildOtherToTextile();
         }
         catch (Exception e)
         {
@@ -107,17 +91,16 @@ public partial class TextileEditorPage : IDisposable
 
     private async void SaveSession()
     {
-        if (TextileContextManager is null)
+        if (Session is null)
             return;
-        await Storage.AddOrSaveAsync(TextileContextManager.TextileEditorContext.Session);
+        await Storage.AddOrSaveAsync(Session);
     }
 
 
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-        if (TextileContextManager is not null)
-            TextileContextManager.TextileEditorContext.PropertyChanged += Painters_PropertyChanged;
+
         if (watchSession is not null)
             watchSession.Logger.LoggerStateChanged -= Logger_LoggerStateChanged;
     }

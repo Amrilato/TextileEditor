@@ -1,15 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
-using TextileEditor.Shared.Common;
-using TextileEditor.Web.Localization;
+using TextileEditor.Web.Services;
 
 namespace TextileEditor.Web.Layout;
 
 public partial class SaveAsDialog : IDialogContentComponent<SaveAsDialogContent>
 {
     [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
+    public required ILocalizer Localizer { get; init; }
 
     [Parameter]
     public SaveAsDialogContent Content { get; set; } = default!;
@@ -29,4 +27,8 @@ public class SaveAsDialogContent
 {
     public string FileName { get; set; } = string.Empty;
     public TextileFileExtensions Extension { get; set; } = TextileFileExtensions.tsd;
+}
+public enum TextileFileExtensions
+{
+    tsd
 }

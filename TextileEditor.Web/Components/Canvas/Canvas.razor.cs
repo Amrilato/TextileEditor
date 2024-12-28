@@ -24,19 +24,28 @@ public partial class Canvas : IDisposable
     private SKSizeI Size => Painter.CanvasSize;
 
     private SKCanvasView? SKCanvasView;
-    private void OnPaintSurface(SKPaintSurfaceEventArgs eventArgs) => Painter?.OnPaintSurface(eventArgs.Surface, eventArgs.Info, eventArgs.RawInfo, CancellationToken.None);
+    private void OnPaintSurface(SKPaintSurfaceEventArgs eventArgs) => Painter?.TryPaintSurface(eventArgs.Surface, eventArgs.Info, eventArgs.RawInfo);
 
-    protected override void OnAfterRender(bool firstRender) => SKCanvasView?.Invalidate();
+    protected override void OnAfterRender(bool firstRender) => Invalidate();
+
+    private void Invalidate()
+    {
+        if (OperatingSystem.IsBrowser())
+            SKCanvasView?.Invalidate();
+    }
 
     protected override void OnParametersSet()
     {
-        if (PreviousPainter is not null)
-            PreviousPainter.Dispose();
+        PreviousPainter?.Dispose();
         if (Painter is not null)
-            PreviousPainter = Painter.RenderProgress.SubscribeAwait(async (renderProgress, token) =>
+            PreviousPainter = Painter.RenderingProgress.SubscribeAwait(async (renderProgress, token) =>
             {
                 if (renderProgress.Status == RenderProgressStates.Ready)
-                    await InvokeAsync(StateHasChanged);
+                {
+
+                    PreviousPainter?.Dispose();
+                    await InvokeAsync(Invalidate);
+                }
             });
     }
 

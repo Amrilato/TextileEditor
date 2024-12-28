@@ -1,15 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using TextileEditor.Shared.Services;
-using TextileEditor.Shared.Services.TextileSessionStorage;
-using TextileEditor.Web.Localization;
+using TextileEditor.Web.Services;
 
 namespace TextileEditor.Web.Layout;
 
 public partial class TextileExplorer : IDisposable
 {
     [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
+    public required ILocalizer Localizer { get; init; }
     [Inject]
     public required ITextileSessionStorage Storage { get; init; }
     [Parameter]
@@ -17,7 +15,7 @@ public partial class TextileExplorer : IDisposable
     private TextileSession? SelectedSession { get; set; }
 
     protected override void OnInitialized() => Storage.SessionListChanged += OnSessionListChanged;
-    private void OnSessionListChanged(ITextileSessionStorage storage, SessionListChangedEventArgs eventArgs) => StateHasChanged();
+    private void OnSessionListChanged(ITextileSessionStorage storage, SessionListChangedEventArgs eventArgs) => InvokeAsync(StateHasChanged);
     public void Dispose()
     {
         GC.SuppressFinalize(this);

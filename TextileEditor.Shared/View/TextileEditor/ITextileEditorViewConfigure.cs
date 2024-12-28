@@ -1,5 +1,6 @@
 ﻿using SkiaSharp;
 using System.ComponentModel;
+using TextileEditor.Shared.View.Common;
 
 namespace TextileEditor.Shared.View.TextileEditor;
 

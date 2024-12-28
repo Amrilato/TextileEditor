@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using TextileEditor.Shared.Services;
 
 namespace TextileEditor.Web.Layout;
 
@@ -13,5 +12,8 @@ public partial class Progress
     public string Description { get; set; } = "";
 
     [Parameter]
-    public BackgroundTaskProgress ProgressValue { get; set; }
+    public int ProgressMax { get; set; }
+
+    [Parameter]
+    public int ProgressValue { get; set; }
 }

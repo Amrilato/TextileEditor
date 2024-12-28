@@ -1,11 +1,8 @@
-﻿using MessagePack;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
-using System.Diagnostics.CodeAnalysis;
+using System.Buffers;
 using TextileEditor.Shared.Services;
-using TextileEditor.Shared.Services.TextileSessionStorage;
-using TextileEditor.Web.Localization;
 
 namespace TextileEditor.Web.Layout;
 
@@ -13,8 +10,6 @@ public partial class UploadDialog : IDialogContentComponent<UploadDialogContent>
 {
     [Inject]
     public required IStringLocalizer<SharedResource> Localizer { get; init; }
-    [Inject]
-    public required IEditorConfigure EditorConfigure { get; init; }
     [Inject]
     public required ITextileSessionStorage Storage { get; init; }
     [Inject]
@@ -39,13 +34,21 @@ public partial class UploadDialog : IDialogContentComponent<UploadDialogContent>
             {
                 try
                 {
-                    await TextileSessionSerializer.DeserializeAsync(Storage, Path.GetFileNameWithoutExtension(file.Name), file.LocalFile.OpenRead(), EditorConfigure);
+                    var name = Path.GetFileNameWithoutExtension(file.Name);
+                    var stream = file.LocalFile.OpenRead();
+                    var buffer = ArrayPool<byte>.Shared.Rent(checked((int)stream.Length));
+                    var data = buffer[..checked((int)stream.Length)];
+                    await stream.ReadExactlyAsync(data);
+                    await Storage.DeserializeAsync(data);
                 }
                 catch (Exception e)
                 {
                     MessageService.NotifyCenter("Failed parse", e.ToString());
                 }
-                file.LocalFile.Delete();
+                finally
+                {
+                    file.LocalFile.Delete();
+                }
             }
         }
 

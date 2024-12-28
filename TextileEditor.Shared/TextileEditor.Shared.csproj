@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.5.192" />
+	  <PackageReference Include="MessagePack" Version="3.1.1" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
 	  <PackageReference Include="R3" Version="1.2.9" />
 	  <PackageReference Include="SkiaSharp" Version="3.116.1" />
   </ItemGroup>
@@ -16,5 +17,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Textile\Textile.csproj" />
   </ItemGroup>
+
+	<PropertyGroup>
+		<BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+	</PropertyGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 using SkiaSharp;
 using TextileEditor.Shared.Common;
 using TextileEditor.Shared.Serialization.MessagePackFormatters;
-using TextileEditor.Shared.View.TextileEditor;
+using TextileEditor.Shared.View.Common;
 
 namespace TextileEditor.Shared.Serialization.Configuration;
 

@@ -10,7 +10,15 @@ namespace TextileEditor.Shared.View.TextileEditor.EventHandler;
 
 public class TextilePasteEventHandler : TextileEditorEventHandlerBase<TextileIndex, bool>, ISynchronizationReactiveTextileEditorViewRenderer<TextileIndex, bool>, IStatefulTextileEditorEventHandler<TextileIndex, bool>
 {
-    public IReadOnlyTextile<TextileIndex, bool>? Clipboard { get; set; }
+    public IReadOnlyTextile<TextileIndex, bool>? Clipboard
+    {
+        get => field;
+        set
+        {
+            field = value;
+            renderStateChanged.OnNext(Unit.Default);
+        }
+    }
 
     private readonly Subject<Unit> renderStateChanged = new();
     public Observable<Unit> RenderStateChanged => renderStateChanged;
@@ -48,7 +56,7 @@ public class TextilePasteEventHandler : TextileEditorEventHandlerBase<TextileInd
             InvokeRequestSurface();
     }
 
-    public RenderProgress Render(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TextileIndex, bool> textile, ITextileEditorViewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress)
+    public Progress Render(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TextileIndex, bool> textile, ITextileEditorViewConfigure configure, IProgress<Progress> progress, Progress currentProgress)
     {
         if (Clipboard is not null && ReferencePoint != new TextileIndex(-1, -1) && RenderTarget == textile)
         {
@@ -65,5 +73,5 @@ public class TextilePasteEventHandler : TextileEditorEventHandlerBase<TextileInd
         return currentProgress;
     }
 
-    public RenderProgress UpdateDifferences(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TextileIndex, bool> textile, ReadOnlyMemory<ChangedValue<TextileIndex, bool>> changedValues, ITextileEditorViewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress) => Render(surface, info, structure, textile, configure, progress, currentProgress);
+    public Progress UpdateDifferences(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TextileIndex, bool> textile, ReadOnlyMemory<ChangedValue<TextileIndex, bool>> changedValues, ITextileEditorViewConfigure configure, IProgress<Progress> progress, Progress currentProgress) => Render(surface, info, structure, textile, configure, progress, currentProgress);
 }

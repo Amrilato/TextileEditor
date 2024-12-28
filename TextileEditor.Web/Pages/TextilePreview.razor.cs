@@ -1,79 +1,52 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
-using TextileEditor.Shared.Painters;
+using R3;
 using TextileEditor.Shared.Services;
-using TextileEditor.Web.Localization;
+using TextileEditor.Shared.View.TextilePreview;
+using TextileEditor.Web.Services;
 
 namespace TextileEditor.Web.Pages;
 
 public partial class TextilePreview : IDisposable
 {
-
     [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
+    public required ILocalizer Localizer { get; init; }
     [Inject]
-    public required IBackgroundWorkerService BackgroundWorkerService { get; init; }
-
-    private TextileContextManager? previousTextileEditorContext;
+    public required IAppSettings AppSettings { get; init; }
     [CascadingParameter(Name = CascadingParameterNames.Session)]
-    public TextileContextManager? TextileEditorContext { get; set; }
+    public TextileSession? Session { get; set; }
 
-    public ITextilePreviewContext? TextilePreviewContext => TextileEditorContext?.TextilePreviewContext;
+    public TextilePreviewContext? TextilePreviewContext => Session?.TextilePreviewContext;
 
     private int PixelSizeX
     {
-        get => TextilePreviewContext?.PixelSize.Width ?? 1;
-        set
-        {
-            if (TextilePreviewContext is not null)
-            {
-                TextilePreviewContext.PixelSize = new(value, TextilePreviewContext.PixelSize.Height);
-            }
-        }
+        get => AppSettings.PixelSize.Width;
+        set => AppSettings.PixelSize = AppSettings.PixelSize with { Width = value };
     }
     private int PixelSizeY
     {
-        get => TextilePreviewContext?.PixelSize.Height ?? 1;
-        set
-        {
-            if (TextilePreviewContext is not null)
-            {
-                TextilePreviewContext.PixelSize = new(TextilePreviewContext.PixelSize.Width, value);
-            }
-        }
+        get => AppSettings.PixelSize.Height;
+        set => AppSettings.PixelSize = AppSettings.PixelSize with { Height = value };
     }
-
+    private bool visible = true;
+    private IDisposable? disposable;
     protected override void OnParametersSet()
     {
-        if (previousTextileEditorContext != TextileEditorContext)
-        {
-            if (TextileEditorContext is not null)
-            {
-                TextileEditorContext.TextilePreviewContext.PropertyChanged += Painters_PropertyChanged;
-            }
-            if (previousTextileEditorContext is not null)
-                previousTextileEditorContext.TextilePreviewContext.PropertyChanged -= Painters_PropertyChanged;
-            previousTextileEditorContext = TextileEditorContext;
-        }
+        disposable?.Dispose();
+        if (TextilePreviewContext is not null)
+            disposable =
+                TextilePreviewContext.Painter.RenderingProgress
+                .Select(r => r.Status)
+                .DistinctUntilChanged().SubscribeAwait(async (s, token) =>
+                {
+                    var prev = visible;
+                    visible = s != Shared.View.Common.RenderProgressStates.Completed;
+                    if (prev != visible)
+                        await InvokeAsync(StateHasChanged);
+                }, AwaitOperation.Sequential);
     }
 
-    private void Painters_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        switch (e.PropertyName)
-        {
-            case nameof(ITextileEditorPainters.TextileSession):
-                {
-                    InvokeAsync(StateHasChanged);
-                }
-                break;
-            default:
-                break;
-        }
-    }
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
-        if (TextileEditorContext is not null)
-            TextileEditorContext.TextilePreviewContext.PropertyChanged += Painters_PropertyChanged;
+        disposable?.Dispose();
     }
 }

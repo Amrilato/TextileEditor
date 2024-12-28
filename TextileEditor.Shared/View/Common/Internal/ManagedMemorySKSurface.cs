@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace TextileEditor.Shared.View.Common;
+namespace TextileEditor.Shared.View.Common.Internal;
 
 internal interface IManagedMemorySKSurface : IDisposable
 {
@@ -116,14 +116,17 @@ internal class ManagedMemorySKSurface : IManagedMemorySKSurface
 
     /// <summary>
     /// Ensures thread safety by enforcing exclusive access to the surface.
+    /// Throws an <see cref="InvalidOperationException"/> if another thread is already accessing the surface.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void Enter()
     {
         if (Interlocked.CompareExchange(ref _syncFlag, SYNC_ENTER, SYNC_EXIT) == SYNC_ENTER)
-            Throw();
+            ThrowInvalidOperationException();
         return;
-        static void Throw() => throw new InvalidOperationException();
+
+        // Throws an exception indicating a synchronization conflict.
+        static void ThrowInvalidOperationException() => throw new InvalidOperationException("The SKSurface is already being accessed by another thread.");
     }
 
     /// <summary>

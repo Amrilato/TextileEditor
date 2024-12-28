@@ -1,6 +1,6 @@
 ﻿@namespace TextileEditor.Web.Layout
 
-<div id="@($"TextileSessionViewMenu-{(Session?.Guid.ToString() ?? "NullReference")}")" style="margin: 2px;">
+<div id="@($"TextileSessionViewMenu-{(Session?.TextileData.Guid.ToString() ?? "NullReference")}")" style="margin: 2px;">
     <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center">
         <FluentIcon Value="@(new Icons.Regular.Size16.GridKanban())" />
         @if (renaming)
@@ -16,7 +16,7 @@
     </FluentStack>
 </div>
 
-<FluentMenu Anchor="@($"TextileSessionViewMenu-{(Session?.Guid.ToString() ?? "NullReference")}")" Trigger="MouseButton.Right" Anchored="false">
-    <FluentMenuItem Label="@(renaming ? Localizer[SharedResource.Cancel] : Localizer[SharedResource.Rename])" OnClick="Rename" />
-    <FluentMenuItem Label="@Localizer[SharedResource.Delete]" OnClick="Remove" />
+<FluentMenu Anchor="@($"TextileSessionViewMenu-{(Session?.TextileData.Guid.ToString() ?? "NullReference")}")" Trigger="MouseButton.Right" Anchored="false">
+    <FluentMenuItem Label="@(renaming ? Localizer.GetString(SharedResource.Cancel) : Localizer.GetString(SharedResource.Rename))" OnClick="Rename" />
+    <FluentMenuItem Label="@Localizer.GetString(SharedResource.Delete)" OnClick="Remove" />
 </FluentMenu>

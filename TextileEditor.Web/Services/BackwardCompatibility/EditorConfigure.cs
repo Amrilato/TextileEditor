@@ -1,7 +1,7 @@
 ﻿using SkiaSharp;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using TextileEditor.Shared.View.TextileEditor;
+using TextileEditor.Shared.View.Common;
 
 namespace TextileEditor.Web.Services.BackwardCompatibility;
 

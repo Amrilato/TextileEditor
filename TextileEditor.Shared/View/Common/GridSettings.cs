@@ -3,7 +3,7 @@ using System.Collections;
 using Textile.Common;
 using Textile.Interfaces;
 
-namespace TextileEditor.Shared.View.TextileEditor;
+namespace TextileEditor.Shared.View.Common;
 
 /// <summary>
 /// Represents the corners of a rectangular grid.
@@ -319,7 +319,7 @@ public static class GridSettingExtensions
     /// <param name="gridSettings">The grid settings defining cell and border dimensions.</param>
     /// <param name="point">The point to calculate the index for.</param>
     /// <returns>The <see cref="TextileIndex"/> of the cell at the specified point.</returns>
-    public static TextileIndex GetIndex(this GridSettings gridSettings, SKPoint point) => GetIndex(gridSettings, (int)point.X, (int)point.Y);
+    public static TextileIndex GetIndex(this GridSettings gridSettings, SKPoint point) => gridSettings.GetIndex((int)point.X, (int)point.Y);
 
     /// <summary>
     /// Gets the index of a cell in the grid based on X and Y offsets.

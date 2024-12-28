@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using Textile.Colors;
 using Textile.Common;
-using TextileEditor.Shared.View.TextileEditor;
 
 namespace TextileEditor.Shared.View.Common;
 

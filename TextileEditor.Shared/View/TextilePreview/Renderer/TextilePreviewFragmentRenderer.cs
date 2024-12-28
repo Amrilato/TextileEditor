@@ -3,7 +3,6 @@ using Textile.Colors;
 using Textile.Common;
 using Textile.Interfaces;
 using TextileEditor.Shared.View.Common;
-using TextileEditor.Shared.View.TextileEditor;
 
 namespace TextileEditor.Shared.View.TextilePreview.Renderer;
 
@@ -18,7 +17,7 @@ public class TextilePreviewFragmentRenderer : ITextilePreviewFragmentRenderer
         SKPaint.Color = (structure.Textile[index] ? structure.HeddleColor[index.X] : structure.PedalColor[index.Y]).AsSKColor();
         surface.Canvas.DrawRect(new GridSettings(0, structure.Textile.Width, structure.Textile.Height, configure.PixelSize.Width, configure.PixelSize.Height).GetCellOffset(index), SKPaint);
     }
-    private static RenderProgress RenderHorizontal(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, int lineIndex, ITextilePreviewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token)
+    private static Progress RenderHorizontal(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, int lineIndex, ITextilePreviewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
     {
         int step = currentProgress.Step;
         for (int x = 0; x < structure.Textile.Width; x++)
@@ -29,7 +28,7 @@ public class TextilePreviewFragmentRenderer : ITextilePreviewFragmentRenderer
         }
         return currentProgress with { Step = step };
     }
-    private static RenderProgress RenderVertical(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, int lineIndex, ITextilePreviewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token)
+    private static Progress RenderVertical(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, int lineIndex, ITextilePreviewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
     {
         int step = currentProgress.Step;
         for (int y = 0; y < structure.Textile.Height; y++)
@@ -41,7 +40,7 @@ public class TextilePreviewFragmentRenderer : ITextilePreviewFragmentRenderer
         return currentProgress with { Step = step };
     }
 
-    private static RenderProgress Render(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ITextilePreviewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token)
+    private static Progress Render(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ITextilePreviewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
     {
         currentProgress = currentProgress with { Step = 0, MaxStep = structure.Textile.Width * structure.Textile.Height };
         for (int x = 0; x < structure.Textile.Width; x++)
@@ -50,9 +49,9 @@ public class TextilePreviewFragmentRenderer : ITextilePreviewFragmentRenderer
         }
         return currentProgress;
     }
-    public Task<RenderProgress> RenderAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ITextilePreviewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token) => Task.Run(() => Render(surface, info, structure, configure, progress, currentProgress, token));
+    public Task<Progress> RenderAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ITextilePreviewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token) => Task.Run(() => Render(surface, info, structure, configure, progress, currentProgress, token));
 
-    private static RenderProgress UpdateDifference(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ReadOnlyMemory<ChangedValue<TextileIndex, bool>> changedValues, ITextilePreviewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token)
+    private static Progress UpdateDifference(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ReadOnlyMemory<ChangedValue<TextileIndex, bool>> changedValues, ITextilePreviewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
     {
         int step = 0;
         currentProgress = currentProgress with { Step = 0, MaxStep = changedValues.Length };
@@ -64,9 +63,9 @@ public class TextilePreviewFragmentRenderer : ITextilePreviewFragmentRenderer
         }
         return currentProgress with { Step = step };
     }
-    public Task<RenderProgress> UpdateDifferencesAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ReadOnlyMemory<ChangedValue<TextileIndex, bool>> changedValues, ITextilePreviewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token) => Task.Run(() => UpdateDifference(surface, info, structure, changedValues, configure, progress, currentProgress, token));
+    public Task<Progress> UpdateDifferencesAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ReadOnlyMemory<ChangedValue<TextileIndex, bool>> changedValues, ITextilePreviewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token) => Task.Run(() => UpdateDifference(surface, info, structure, changedValues, configure, progress, currentProgress, token));
 
-    public static RenderProgress UpdateHeddleDifferences(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ReadOnlyMemory<ChangedValue<int, Color>> changedValues, ITextilePreviewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token)
+    public static Progress UpdateHeddleDifferences(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ReadOnlyMemory<ChangedValue<int, Color>> changedValues, ITextilePreviewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
     {
         currentProgress = currentProgress with { Step = 0, MaxStep = changedValues.Length * structure.PedalColor.Height };
         ReadOnlySpan<ChangedValue<int, Color>> values = changedValues.Span;
@@ -76,9 +75,9 @@ public class TextilePreviewFragmentRenderer : ITextilePreviewFragmentRenderer
         }
         return currentProgress;
     }
-    public Task<RenderProgress> UpdateHeddleDifferencesAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ReadOnlyMemory<ChangedValue<int, Color>> changedValues, ITextilePreviewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token) => Task.Run(() => UpdateHeddleDifferencesAsync(surface, info, structure, changedValues, configure, progress, currentProgress, token));
+    public Task<Progress> UpdateHeddleDifferencesAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ReadOnlyMemory<ChangedValue<int, Color>> changedValues, ITextilePreviewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token) => Task.Run(() => UpdateHeddleDifferencesAsync(surface, info, structure, changedValues, configure, progress, currentProgress, token));
 
-    public static RenderProgress UpdatePedalDifferences(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ReadOnlyMemory<ChangedValue<int, Color>> changedValues, ITextilePreviewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token)
+    public static Progress UpdatePedalDifferences(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ReadOnlyMemory<ChangedValue<int, Color>> changedValues, ITextilePreviewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
     {
         currentProgress = currentProgress with { Step = 0, MaxStep = changedValues.Length * structure.HeddleColor.Width };
         ReadOnlySpan<ChangedValue<int, Color>> values = changedValues.Span;
@@ -88,5 +87,5 @@ public class TextilePreviewFragmentRenderer : ITextilePreviewFragmentRenderer
         }
         return currentProgress;
     }
-    public Task<RenderProgress> UpdatePedalDifferencesAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ReadOnlyMemory<ChangedValue<int, Color>> changedValues, ITextilePreviewConfigure configure, IProgress<RenderProgress> progress, RenderProgress currentProgress, CancellationToken token) => Task.Run(() => UpdatePedalDifferences(surface, info, structure, changedValues, configure, progress, currentProgress, token));
+    public Task<Progress> UpdatePedalDifferencesAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, ReadOnlyMemory<ChangedValue<int, Color>> changedValues, ITextilePreviewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token) => Task.Run(() => UpdatePedalDifferences(surface, info, structure, changedValues, configure, progress, currentProgress, token));
 }

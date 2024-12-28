@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
+﻿using DotNext.Buffers;
+using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
-using TextileEditor.Shared.Common;
+using System.Buffers;
+using Textile.Data;
 using TextileEditor.Shared.Services;
-using TextileEditor.Shared.Services.TextileSessionStorage;
-using TextileEditor.Web.Localization;
 using TextileEditor.Web.Services;
 
 namespace TextileEditor.Web.Layout;
@@ -19,7 +18,7 @@ public partial class File
     public ITextileSessionManager? TextileSessionManager { get; set; }
 
     [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
+    public required ILocalizer Localizer { get; init; }
     [Inject]
     public required FileDownloadService FileDownloadService { get; init; }
 
@@ -33,14 +32,14 @@ public partial class File
     public required ITextileSessionStorage Storage { get; init; }
 
     [Inject]
-    public required IEditorConfigure EditorConfigure { get; init; }
+    public required IAppSettings AppSettings { get; init; }
 
     private SaveAsDialogContent SaveAsDialogContent { get; } = new();
     private async Task OpenDialogAsync()
     {
         DialogParameters parameters = new()
         {
-            Title = Localizer[SharedResource.SaveAs],
+            Title = Localizer.GetString(SharedResource.SaveAs),
             PrimaryAction = "Yes",
             SecondaryAction = "No",
             Width = "500px",
@@ -70,9 +69,9 @@ public partial class File
 
             DialogParameters parameters = new()
             {
-                Title = Localizer[SharedResource.Upload],
+                Title = Localizer.GetString(SharedResource.Upload),
                 Width = "500px",
-                PrimaryAction = Localizer[SharedResource.Done],
+                PrimaryAction = Localizer.GetString(SharedResource.Done),
                 TrapFocus = true,
                 Modal = true,
                 PreventScroll = true
@@ -103,8 +102,8 @@ public partial class File
     {
         DialogParameters parameters = new()
         {
-            Title = Localizer[SharedResource.CreateNew],
-            PrimaryAction = Localizer[SharedResource.Create],
+            Title = Localizer.GetString(SharedResource.CreateNew),
+            PrimaryAction = Localizer.GetString(SharedResource.Create),
             TrapFocus = true,
             Modal = true,
             PreventScroll = true
@@ -115,7 +114,7 @@ public partial class File
 
 
         if (result is not null && !result.Cancelled && result.Data is CreateDialogContent dialogContent)
-            _ = Storage.AddOrSaveAsync(new(EditorConfigure, true, new(dialogContent), EditorConfigure.BorderColor, EditorConfigure.FillColor, EditorConfigure.TieupPosition, dialogContent.SessionName, Storage.GenerateGuid()));
+            _ = Storage.CreateAsync(new TextileStructureSize(dialogContent.TieupWidth, dialogContent.TieupHeight, dialogContent.TextileWidth, dialogContent.TextileHeight), dialogContent.SessionName);
 
     }
 
@@ -124,7 +123,12 @@ public partial class File
         if (TextileSessionManager is null || TextileSessionManager.CurrentSession is null)
             MessageService.NotifyCenter("Textile is not selected", "please select textile", MessageIntent.Warning);
         else
-            await FileDownloadService.DownloadAsync(TextileSessionManager.CurrentSession);
+        {
+            using PoolingArrayBufferWriter<byte> buffer = new(ArrayPool<byte>.Shared);
+            Storage.Serialize(TextileSessionManager.CurrentSession.TextileData, buffer);
+            using var memory = buffer.DetachBuffer();
+            await FileDownloadService.DownloadAsync(memory.Memory.ToArray(), TextileSessionManager.CurrentSession.TextileData.Name, ".tsd");
+        }
     }
     private async void GenerateDownloadLinkAsync()
     {
@@ -132,11 +136,14 @@ public partial class File
             MessageService.NotifyCenter("Textile is not selected", "please select textile", MessageIntent.Warning);
         else
         {
-            var href = await FileDownloadService.CreateBlobUrlAsync(TextileSessionManager.CurrentSession);
+            using PoolingArrayBufferWriter<byte> buffer = new(ArrayPool<byte>.Shared);
+            Storage.Serialize(TextileSessionManager.CurrentSession.TextileData, buffer);
+            using var memory = buffer.DetachBuffer();
+            var href = await FileDownloadService.CreateBlobUrlAsync(memory.Memory.ToArray());
             MessageService.ShowMessageBar(options =>
             {
                 options.Intent = MessageIntent.Info;
-                options.Title = $"{TextileSessionManager.CurrentSession.Name} Download Link";
+                options.Title = $"{TextileSessionManager.CurrentSession.TextileData.Name} Download Link";
                 options.Body = $"right click to link and save as file.";
                 options.Link = new() { Href = href, Text = "Download" };
                 options.Timestamp = DateTime.Now;
@@ -145,7 +152,4 @@ public partial class File
             });
         }
     }
-
-
-    private void ForceSave() => Storage.SaveAsync();
 }

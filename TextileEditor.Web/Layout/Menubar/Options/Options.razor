@@ -2,17 +2,16 @@
 @using System.Globalization
 @using Microsoft.Extensions.Localization
 @using TextileEditor.Web.Services
-@inject IStringLocalizer<SharedResource> Localizer
-@inject ILanguageStorageService LanguageStorage
+@inject ILocalizer Localizer
 
 <FluentButton id="OptionMenuOpen" Disabled="open" Appearance="Appearance.Stealth" @onclick="@(() => open = !open)">
-    @Localizer[SharedResource.Options]
+    @Localizer.GetString(SharedResource.Options)
 </FluentButton>
 
 <FluentMenu Anchor="OptionMenuOpen" @bind-Open="open" VerticalThreshold="170">
-    <FluentMenuItem Label="@Localizer[SharedResource.Theme]">
+    <FluentMenuItem Label="@Localizer.GetString(SharedResource.Theme)">
         <MenuItems>
-            <FluentMenuItem Label="@Localizer[SharedResource.Mode]">
+            <FluentMenuItem Label="@Localizer.GetString(SharedResource.Mode)">
                 <MenuItems>
                     @foreach (var theme in Enum.GetValues<DesignThemeModes>())
                     {
@@ -20,7 +19,7 @@
                     }
                 </MenuItems>
             </FluentMenuItem>
-            <FluentMenuItem Label="@Localizer[SharedResource.Color]">
+            <FluentMenuItem Label="@Localizer.GetString(SharedResource.Color)">
                 <MenuItems>
                     @foreach (var theme in Enum.GetValues<OfficeColor>())
                     {
@@ -37,11 +36,11 @@
             </FluentMenuItem>
         </MenuItems>
     </FluentMenuItem>
-    <FluentMenuItem Label="@Localizer[SharedResource.Language]">
+    <FluentMenuItem Label="@Localizer.GetString(SharedResource.Language)">
         <MenuItems>
-            @foreach (var language in LanguageStorage.SupportedLanguages)
+            @foreach (var language in Localizer.SupportedLanguages)
             {
-                <FluentMenuItem Role="MenuItemRole.MenuItemRadio" Checked="@(EqualityComparer<CultureInfo>.Default.Equals(language, LanguageStorage.GetCachedCulture()))" OnClick="@(async e => await LanguageStorage.SetCulture(language))">
+                <FluentMenuItem Role="MenuItemRole.MenuItemRadio" Checked="@(EqualityComparer<CultureInfo>.Default.Equals(language, CultureInfo.CurrentCulture))" OnClick="@(async e => await Localizer.SetCulture(language))">
                     @language.DisplayName
                 </FluentMenuItem>
             }

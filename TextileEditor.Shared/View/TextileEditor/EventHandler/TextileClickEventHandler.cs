@@ -1,7 +1,7 @@
 ﻿using SkiaSharp;
-using System.Drawing;
 using Textile.Common;
 using Textile.Interfaces;
+using TextileEditor.Shared.View.Common;
 
 namespace TextileEditor.Shared.View.TextileEditor.EventHandler;
 
@@ -25,6 +25,7 @@ public class TextileClickEventHandler : TextileEditorEventHandlerBase<TextileInd
 
     public override void OnPointerLeave(SKPoint point, ITextile<TextileIndex, bool> textileData, IReadOnlyTextileStructure structure, ITextileEditorViewConfigure configure)
     {
+        Console.WriteLine($"Type: {textileData.GetType().Name}");
         IsPointerDown = false;
         IsPointerMoved = false;
         TextileIndex = new(-1, -1);

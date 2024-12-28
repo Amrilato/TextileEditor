@@ -5,5 +5,5 @@
         <h3>@Name</h3>
         <p>@Description</p>
     </div>
-    <FluentProgress Min="0" Max="ProgressValue.Max" Value="@(ProgressValue.Step > 0 ? ProgressValue.Step : null)" />
+    <FluentProgress Min="0" Max="ProgressMax" Value="@(ProgressValue > 0 ? ProgressValue : null)" />
 </div>

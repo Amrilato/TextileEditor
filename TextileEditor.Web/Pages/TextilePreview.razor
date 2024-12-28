@@ -1,14 +1,14 @@
 ﻿@page "/preview"
 @using TextileEditor.Web.Components
 
-@if (TextileEditorContext is not null && TextilePreviewContext is not null)
+@if (TextilePreviewContext is not null)
 {
+
     <FluentStack Style="height: 100%" Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Left" VerticalAlignment="VerticalAlignment.Top">
         <FluentStack>
-            <FluentButton IconStart="@(new Icons.Regular.Size20.ArrowReset())" OnClick="TextilePreviewContext.Rerender" />
             <FluentStack Orientation="Orientation.Vertical">
                 <FluentStack>
-                    <FluentSlider Label="@Localizer[SharedResource.SelectAHorizontalRepeat]" Min="1" Max="100" Step="1" @bind-Value=TextilePreviewContext.RepeatHorizontal>
+                    <FluentSlider Label="@Localizer.GetString(SharedResource.SelectAHorizontalRepeat)" Min="1" Max="100" Step="1" @bind-Value=AppSettings.RepeatHorizontal>
                         <FluentSliderLabel Position="1">1</FluentSliderLabel>
                         <FluentSliderLabel Position="10">10</FluentSliderLabel>
                         <FluentSliderLabel Position="20">20</FluentSliderLabel>
@@ -21,7 +21,7 @@
                         <FluentSliderLabel Position="90">90</FluentSliderLabel>
                         <FluentSliderLabel Position="100">100</FluentSliderLabel>
                     </FluentSlider>
-                    <FluentSlider Label="@Localizer[SharedResource.SelectAVerticalRepeat]" Min="1" Max="100" Step="1" @bind-Value=TextilePreviewContext.RepeatVertical>
+                    <FluentSlider Label="@Localizer.GetString(SharedResource.SelectAVerticalRepeat)" Min="1" Max="100" Step="1" @bind-Value=AppSettings.RepeatVertical>
                         <FluentSliderLabel Position="1">1</FluentSliderLabel>
                         <FluentSliderLabel Position="10">10</FluentSliderLabel>
                         <FluentSliderLabel Position="20">20</FluentSliderLabel>
@@ -36,7 +36,7 @@
                     </FluentSlider>
                 </FluentStack>
                 <FluentStack>
-                    <FluentSlider Label="@Localizer[SharedResource.SelectAPixelWidth]" Min="1" Max="10" Step="1" @bind-Value=PixelSizeX>
+                    <FluentSlider Label="@Localizer.GetString(SharedResource.SelectAPixelWidth)" Min="1" Max="10" Step="1" @bind-Value=PixelSizeX>
                         <FluentSliderLabel Position="1">1</FluentSliderLabel>
                         <FluentSliderLabel Position="2">2</FluentSliderLabel>
                         <FluentSliderLabel Position="3">3</FluentSliderLabel>
@@ -48,7 +48,7 @@
                         <FluentSliderLabel Position="9">9</FluentSliderLabel>
                         <FluentSliderLabel Position="10">10</FluentSliderLabel>
                     </FluentSlider>
-                    <FluentSlider Label="@Localizer[SharedResource.SelectAPixelHeight]" Min="1" Max="10" Step="1" @bind-Value=PixelSizeY>
+                    <FluentSlider Label="@Localizer.GetString(SharedResource.SelectAPixelHeight)" Min="1" Max="10" Step="1" @bind-Value=PixelSizeY>
                         <FluentSliderLabel Position="1">1</FluentSliderLabel>
                         <FluentSliderLabel Position="2">2</FluentSliderLabel>
                         <FluentSliderLabel Position="3">3</FluentSliderLabel>
@@ -63,10 +63,13 @@
                 </FluentStack>
             </FluentStack>
         </FluentStack>
-        <Canvas SKSurfacePainter="TextilePreviewContext.PreviewPainter" Size="TextilePreviewContext.CanvasSize" />
+        <Canvas Painter="Session?.TextilePreviewContext.Painter" />
     </FluentStack>
-}
-else
-{
-    
+    <FluentOverlay @bind-Visible=visible
+                   Dismissable=false
+                   Opacity="0.4"
+                   Alignment="@Align.Center"
+                   Justification="@JustifyContent.Center">
+        <FluentProgressRing />
+    </FluentOverlay>
 }

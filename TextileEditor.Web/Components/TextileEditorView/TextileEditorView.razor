@@ -1,27 +1,26 @@
 ﻿@namespace TextileEditor.Web.Components
 @using TextileEditor.Shared.Shared.Common
 
-@if (Context is not null && Context.AlreadyRender)
+
+@if(Context is not null)
 {
     <div id="container">
-        <Canvas Painter="Context.Textile" EventHandler="Context.Textile" Style="@GridAreaTemplate.GetAreaTemplate(Context.Session.TieupPosition).Textile" />
-        <Canvas Painter="Context.Heddle" EventHandler="Context.Heddle" Style="@GridAreaTemplate.GetAreaTemplate(Context.Session.TieupPosition).Heddle" />
-        <Canvas Painter="Context.Pedal" EventHandler="Context.Pedal" Style="@GridAreaTemplate.GetAreaTemplate(Context.Session.TieupPosition).Pedal" />
-        <Canvas Painter="Context.Tieup" EventHandler="Context.Tieup" Style="@GridAreaTemplate.GetAreaTemplate(Context.Session.TieupPosition).Tieup" />
+        <Canvas Painter="Context.Textile" EventHandler="Context.Textile" Style="@GridAreaTemplate.GetAreaTemplate(AppSettings.TieupPosition).Textile" />
+        <Canvas Painter="Context.Heddle" EventHandler="Context.Heddle" Style="@GridAreaTemplate.GetAreaTemplate(AppSettings.TieupPosition).Heddle" />
+        <Canvas Painter="Context.Pedal" EventHandler="Context.Pedal" Style="@GridAreaTemplate.GetAreaTemplate(AppSettings.TieupPosition).Pedal" />
+        <Canvas Painter="Context.Tieup" EventHandler="Context.Tieup" Style="@GridAreaTemplate.GetAreaTemplate(AppSettings.TieupPosition).Tieup" />
 
-        <Canvas Painter="Context.HeddleColor" EventHandler="Context.HeddleColor" Style="@GridAreaTemplate.GetAreaTemplate(Context.Session.TieupPosition).HeddleColor" />
-        <Canvas Painter="Context.PedalColor" EventHandler="Context.PedalColor" Style="@GridAreaTemplate.GetAreaTemplate(Context.Session.TieupPosition).PedalColor" />
+        <Canvas Painter="Context.HeddleColor" EventHandler="Context.HeddleColor" Style="@GridAreaTemplate.GetAreaTemplate(AppSettings.TieupPosition).HeddleColor" />
+        <Canvas Painter="Context.PedalColor" EventHandler="Context.PedalColor" Style="@GridAreaTemplate.GetAreaTemplate(AppSettings.TieupPosition).PedalColor" />
     </div>
-}
-else if (Context is not null && !Context.AlreadyRender)
-{
-    <FluentStack Style="height: 100%" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" @onclick="InvokeStateHasChange">
-        <FluentProgressRing style="width: 128px; height: 128px;"></FluentProgressRing>
-    </FluentStack>
-}
-else
-{
-    <FluentStack Style="height: 100%" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" @onclick="InvokeStateHasChange">
-        @Localizer[SharedResource.NotSelectedTextile]
-    </FluentStack>    
+    @if (!AlreadyRender)
+    {   
+    <FluentOverlay @bind-Visible=visible
+                   Dismissable=false
+                   Opacity="0.4"
+                   Alignment="@Align.Center"
+                   Justification="@JustifyContent.Center">
+        <FluentProgressRing />
+    </FluentOverlay>
+    }
 }

@@ -1,30 +1,25 @@
-﻿using R3;
-using SkiaSharp;
+﻿using SkiaSharp;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using Textile.Common;
 using Textile.Interfaces;
 using TextileEditor.Shared.View.Common;
+using TextileEditor.Shared.View.Common.Internal;
 using TextileEditor.Shared.View.TextileEditor.DataSelector;
 using TextileEditor.Shared.View.TextileEditor.Pipeline;
 
 namespace TextileEditor.Shared.View.TextileEditor;
 
-internal class TextileEditorViewPainter<TIndex, TValue, TSelector> : Painter, ITextileChangedWatcher<TIndex, TValue>, IProgress<RenderProgress>, IDisposable
+internal abstract class TextileEditorViewPainter<TIndex, TValue, TSelector> : Painter, ITextileChangedWatcher<TIndex, TValue>, IDisposable
     where TSelector : ITextileSelector<TIndex, TValue, TSelector>, IDisposable
 {
-    protected readonly Lock renderTaskLock = new();
     private Task renderTask = Task.FromException(new TaskCanceledException());
     private readonly ConcurrentQueue<ChangedValue<TIndex, TValue>[]> ChangedValueQueue = new();
     protected readonly IManagedMemorySKSurface surfacePainter = ManagedMemorySKSurface.Create();
-    protected CancellationTokenSource cancellationTokenSource;
-    private bool disposedValue;
+    private CancellationTokenSource cancellationTokenSource;
     private readonly TSelector selector;
     private readonly IReadOnlyTextileStructure structure;
     private readonly ITextileEditorViewRenderPipeline<TIndex, TValue> pipeline;
     protected readonly ITextileEditorViewConfigure configure;
-    private readonly ReactiveProperty<RenderProgress> renderProgress;
-    public override ReadOnlyReactiveProperty<RenderProgress> RenderProgress => renderProgress;
 
     public override SKSizeI CanvasSize => configure.GridSize.ToSettings(selector.Textile).CanvasSize();
     public TextileEditorViewPainter(IReadOnlyTextileStructure structure, ITextileEditorViewRenderPipeline<TIndex, TValue> pipeline, ITextileEditorViewConfigure configure)
@@ -35,179 +30,89 @@ internal class TextileEditorViewPainter<TIndex, TValue, TSelector> : Painter, IT
         this.configure = configure;
         cancellationTokenSource = new();
         cancellationTokenSource.Cancel();
-        renderProgress = new();
-        renderProgress.OnNext(new(0, 0, 0, 0, RenderProgressStates.NotStarted));
     }
 
-    protected override void Initialize(SKImageInfo info, CancellationToken token)
+    protected override Task InitializeAsync(SKImageInfo info, IProgress<Progress> progress, CancellationToken token)
     {
-        if (!info.Equals(surfacePainter.SKImageInfo))
+        var previCancellationTokenSource = cancellationTokenSource;
+        cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+        if (surfacePainter.SKImageInfo == info)
         {
-            surfacePainter.ChangeImageInfo(info);
-            using (renderTaskLock.EnterScope())
+            switch (renderTask.Status)
             {
-                renderTask = RenderAsync(cancellationTokenSource.Token);
+                case TaskStatus.Created:
+                    break;
+                case TaskStatus.WaitingForActivation:
+                    break;
+                case TaskStatus.WaitingToRun:
+                    break;
+                case TaskStatus.Running:
+                    break;
+                case TaskStatus.WaitingForChildrenToComplete:
+                    break;
+                case TaskStatus.RanToCompletion:
+                    renderTask = Update(this, info, progress, new(), token);
+                    break;
+                case TaskStatus.Canceled:
+                case TaskStatus.Faulted:
+                    ChangedValueQueue.Clear();
+                    renderTask = Render(this, info, progress, new(), token);
+                    break;
+                default:
+                    break;
             }
         }
         else
         {
-            using (renderTaskLock.EnterScope())
+            previCancellationTokenSource.Cancel();
+            renderTask = renderTask.ContinueWith(s => Render(this, info, progress, new(), token), TaskContinuationOptions.None).Unwrap();
+        }
+        return renderTask;
+
+        static async Task<Progress> Render(TextileEditorViewPainter<TIndex, TValue, TSelector> @this, SKImageInfo info, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
+        {
             {
-                if (renderTask.IsFaulted || renderTask.IsCanceled)
-                    renderTask = RenderAsync(token);
+                using var surface = @this.surfacePainter.CreateSurface(info);
+                currentProgress = await @this.pipeline.RenderAsync(surface.SKSurface, info, @this.structure, @this.selector.Textile, @this.configure, progress, currentProgress, token);
             }
+            return await Update(@this, info, progress, currentProgress, token);
+        }
+        static async Task<Progress> Update(TextileEditorViewPainter<TIndex, TValue, TSelector> @this, SKImageInfo info, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
+        {
+            if (@this.ChangedValueQueue.TryDequeue(out var changedValues))
+            {
+                using var surface = @this.surfacePainter.CreateSurface(info);
+                currentProgress = await @this.pipeline.UpdateDifferencesAsync(surface.SKSurface, info, @this.structure, @this.selector.Textile, changedValues, @this.configure, progress, currentProgress, token);
+                return await Update(@this, info, progress, currentProgress, token);
+            }
+            return currentProgress;
         }
     }
 
-    protected override void Paint(SKSurface surface, SKImageInfo info, SKImageInfo rawInfo)
-    {
-        using SKPaint sKPaint = new();
+    protected override void Paint(SKSurface surface, SKImageInfo info, SKImageInfo rawInfo, IProgress<Progress> progress) 
+    { 
+        using SKPaint sKPaint = new() { BlendMode = SKBlendMode.Src };
         using var source = surfacePainter.CreateSurface(info);
-        surface.Draw(source.SKSurface.Canvas, 0, 0, sKPaint);
-        Report(new() { Status = RenderProgressStates.Completed });
-    }
-    private async Task CancelCurrentRenderTask()
-    {
-        using (renderTaskLock.EnterScope())
-        {
-            if (renderTask.IsCompletedSuccessfully || renderTask.IsFaulted)
-                return;
-        }
-
-        cancellationTokenSource.Cancel();
-        try
-        {
-            await renderTask;
-        }
-        catch (TaskCanceledException) { }
-    }
-
-    private async Task RenderAsync(CancellationToken token)
-    {
-        if (token.IsCancellationRequested)
-            return;
-
-        try
-        {
-            await CancelCurrentRenderTask().ConfigureAwait(false);
-            using (progressLock.EnterScope())
-            {
-                renderProgress.Initializing();
-            }
-            using var sKSurfaceOwner = surfacePainter.CreateSurface(out var info);
-            var progress = await pipeline.RenderAsync(sKSurfaceOwner.SKSurface, info, structure, selector.Textile, configure, this, new(0, pipeline.RenderAsyncPhase, 0, 0, RenderProgressStates.Initializing), token);
-            if (ChangedValueQueue.TryDequeue(out var values))
-                progress = await UpdateDifferencesAsync(values, progress, token);
-            using (progressLock.EnterScope())
-            {
-                renderProgress.InitializingCompleted(progress);
-            }
-        }
-        catch (TaskCanceledException)
-        {
-            Report(new() { Status = RenderProgressStates.Canceled });
-        }
-        catch (Exception e)
-        {
-            using (progressLock.EnterScope())
-            {
-                renderProgress.OnNext(new(0, 0, 0, 0, RenderProgressStates.Failed));
-                renderProgress.OnErrorResume(e);
-            }
-        }
-    }
-
-    private async Task UpdateDifferencesAsync(ReadOnlyMemory<ChangedValue<TIndex, TValue>> changedValues, CancellationToken token)
-    {
-        try
-        {
-            using (progressLock.EnterScope())
-            {
-                renderProgress.Initializing();
-            }
-            var progress = await UpdateDifferencesAsync(changedValues, new(0, 0, 0, 0, RenderProgressStates.Initializing), token).ConfigureAwait(false);
-            using (progressLock.EnterScope())
-            {
-                renderProgress.InitializingCompleted(progress);
-            }
-        }
-        catch (TaskCanceledException)
-        {
-            Report(new() { Status = RenderProgressStates.Canceled });
-        }
-        catch (Exception e)
-        {
-            using (progressLock.EnterScope())
-            {
-                renderProgress.OnNext(new(0, 0, 0, 0, RenderProgressStates.Failed));
-                renderProgress.OnErrorResume(e);
-            }
-        }
-    }
-
-    private async Task<RenderProgress> UpdateDifferencesAsync(ReadOnlyMemory<ChangedValue<TIndex, TValue>> changedValues, RenderProgress progress, CancellationToken token)
-    {
-        using var sKSurfaceOwner = surfacePainter.CreateSurface(out var info);
-        progress = await pipeline.UpdateDifferencesAsync(sKSurfaceOwner.SKSurface, info, structure, selector.Textile, changedValues, configure, this, progress with { MaxPhase = progress.MaxPhase + pipeline.UpdateDifferencesAsyncPhase }, token).ConfigureAwait(false);
-        if (ChangedValueQueue.TryDequeue(out var values))
-            return await UpdateDifferencesAsync(values, progress, token);
-        else
-            return progress;
-    }
-
-    public void Report(RenderProgress value)
-    {
-        using (progressLock.EnterScope())
-        {
-            renderProgress.OnNext(value);
-        }
+        surface.Canvas.DrawSurface(source.SKSurface, 0, 0, sKPaint);
     }
 
     public void OnChanged(ReadOnlySpan<ChangedValue<TIndex, TValue>> changedValues)
     {
         var buffer = new ChangedValue<TIndex, TValue>[changedValues.Length];
         changedValues.CopyTo(buffer);
-        using (renderTaskLock.EnterScope())
-        {
-            if (renderTask.IsCompletedSuccessfully)
-                renderTask = UpdateDifferencesAsync(buffer, cancellationTokenSource.Token);
-            else if (renderTask.IsCompleted)
-                renderTask = RenderAsync(cancellationTokenSource.Token);
-            else
-                ChangedValueQueue.Enqueue(buffer);
-        }
+        ChangedValueQueue.Enqueue(buffer);
+        InitializeWithLock(surfacePainter.SKImageInfo, cancellationTokenSource.Token);
     }
 
-    protected virtual void Dispose(bool disposing)
+    protected override void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        base.Dispose(disposing);
+        if (disposing)
         {
-            if (disposing)
-            {
-                cancellationTokenSource.Cancel();
-                cancellationTokenSource.Dispose();
-                selector.Dispose();
-                surfacePainter.Dispose();
-                renderProgress.Dispose();
-            }
-
-            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-            // TODO: set large fields to null
-            disposedValue = true;
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+            selector.Dispose();
+            surfacePainter.Dispose();
         }
-    }
-
-    // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-    // ~TextileEditorViewPainter()
-    // {
-    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-    //     Dispose(disposing: false);
-    // }
-
-    public void Dispose()
-    {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
     }
 }

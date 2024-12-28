@@ -1,11 +1,13 @@
 ﻿namespace TextileEditor.Shared.View.Common;
+
+
 /// <summary>
-/// Represents the progress of a rendering process.
+/// Represents the progress of a process.
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="RenderProgress"/> struct.
+/// Initializes a new instance of the <see cref="Progress"/> struct.
 /// </remarks>
-public readonly struct RenderProgress(int phase, int maxPhase, int step, int maxStep, RenderProgressStates status)
+public readonly struct Progress(int phase, int maxPhase, int step, int maxStep)
 {
     /// <summary>
     /// The current phase of the rendering process.
@@ -26,6 +28,57 @@ public readonly struct RenderProgress(int phase, int maxPhase, int step, int max
     /// The total number of steps within the current phase.
     /// </summary>
     public int MaxStep { get; init; } = maxStep;
+
+    /// <summary>
+    /// The percentage progress of the rendering process, dynamically calculated.
+    /// </summary>
+    public readonly double GetProgress()
+    {
+        if (MaxPhase == 0) return 0.0; // Avoid division by zero
+        if (MaxStep == 0) return Phase / (double)MaxPhase;
+
+        double completedPhaseProgress = (Phase - 1) / (double)MaxPhase;
+        double currentPhaseProgress = (Step / (double)MaxStep) / MaxPhase;
+
+        return Math.Min(1.0, completedPhaseProgress + currentPhaseProgress); // Clamp to 100%
+    }
+
+    /// <summary>
+    /// Returns a string representation of the current progress.
+    /// </summary>
+    public override string ToString()
+    {
+        return $"Phase: {Phase}/{MaxPhase}, Step: {Step}/{MaxStep}, Progress: {GetProgress():P2}";
+    }
+}
+
+/// <summary>
+/// Represents the progress of a rendering process.
+/// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="RenderProgress"/> struct.
+/// </remarks>
+public readonly struct RenderProgress(Progress progress, RenderProgressStates status)
+{
+    /// <summary>
+    /// The current phase of the rendering process.
+    /// </summary>
+    public int Phase { get; init; } = progress.Phase;
+
+    /// <summary>
+    /// The total number of phases in the rendering process.
+    /// </summary>
+    public int MaxPhase { get; init; } = progress.MaxPhase;
+
+    /// <summary>
+    /// The current step within the current phase.
+    /// </summary>
+    public int Step { get; init; } = progress.Step;
+
+    /// <summary>
+    /// The total number of steps within the current phase.
+    /// </summary>
+    public int MaxStep { get; init; } = progress.MaxStep;
 
     /// <summary>
     /// The current state of the rendering process.

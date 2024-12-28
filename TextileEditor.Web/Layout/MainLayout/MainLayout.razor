@@ -23,7 +23,7 @@
             <TextileExplorer SessionManager="this" />
         </div>
         <div class="content @(IsMenuOpen)">
-            <CascadingValue Value="TextileContextManager" Name="@CascadingParameterNames.Session">
+            <CascadingValue Value="CurrentSession" Name="@CascadingParameterNames.Session">
                 @Body
             </CascadingValue>
         </div>

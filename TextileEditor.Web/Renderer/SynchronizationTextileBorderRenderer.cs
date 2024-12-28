@@ -2,19 +2,25 @@
 using Textile.Common;
 using Textile.Interfaces;
 using TextileEditor.Shared.View.Common;
+using TextileEditor.Shared.View.TextileEditor.Renderer;
+using TextileEditor.Shared.View.TextileEditor;
 
-namespace TextileEditor.Shared.View.TextileEditor.Renderer;
+namespace TextileEditor.Web.Renderer;
 
-public class TextileBorderRenderer<TIndex, TValue> : ITextileEditorViewRenderer<TIndex, TValue>
+public class SynchronizationTextileBorderRenderer<TIndex, TValue> : ITextileEditorViewRenderer<TIndex, TValue>
 {
     public static readonly TextileBorderRenderer<TIndex, TValue> Instance = new();
 
     private int GetMaxStep(ITextileSize textile) => textile.Width + textile.Height + 2;
-    static TextileBorderRenderer() => SKPaint = new() { BlendMode = SKBlendMode.Src };
+    static SynchronizationTextileBorderRenderer() => SKPaint = new() { BlendMode = SKBlendMode.Src };
     [ThreadStatic]
     protected readonly static SKPaint SKPaint;
 
-    public async Task<Progress> RenderAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ITextileEditorViewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token) => await Task.Run(() => Render(surface, info, structure, textile, configure, token, progress, currentProgress));
+    public Task<Progress> RenderAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ITextileEditorViewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
+    {
+        return Task.FromResult(Render(surface, info, structure, textile, configure, token, progress, currentProgress));
+    }
+
     public Progress Render(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ITextileEditorViewConfigure configure, CancellationToken token, IProgress<Progress> progress, Progress currentProgress)
     {
         SKPaint.Color = configure.BorderColor;

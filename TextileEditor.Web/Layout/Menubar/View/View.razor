@@ -2,25 +2,25 @@
 @using System.Globalization
 @using Microsoft.Extensions.Localization
 @using TextileEditor.Web.Services
-@inject IStringLocalizer<SharedResource> Localizer
+@inject ILocalizer Localizer
 @inject NavigationManager Navigation
 
 <FluentButton id="ViewMenuOpen" Disabled="open" Appearance="Appearance.Stealth" @onclick="@(() => open = !open)">
-    @Localizer[SharedResource.View]
+    @Localizer.GetString(SharedResource.View)
 </FluentButton>
 
 <FluentMenu Anchor="ViewMenuOpen" @bind-Open="open" VerticalThreshold="170">
     <FluentMenuItem OnClick="@(() => Navigation.NavigateTo(""))">
-        @Localizer[SharedResource.Home]
+        @Localizer.GetString(SharedResource.Home)
     </FluentMenuItem>
     <FluentMenuItem OnClick="@(() => Navigation.NavigateTo("edit"))" >
-        @Localizer[SharedResource.Edit]
+        @Localizer.GetString(SharedResource.Edit)
     </FluentMenuItem>
     <FluentMenuItem OnClick="@(() => Navigation.NavigateTo("preview"))" >
-        @Localizer[SharedResource.Preview]
+        @Localizer.GetString(SharedResource.Preview)
     </FluentMenuItem>
     <FluentMenuItem OnClick="@(() => Navigation.NavigateTo("config"))">
-        @Localizer[SharedResource.Config]
+        @Localizer.GetString(SharedResource.Config)
     </FluentMenuItem>
 </FluentMenu>
 

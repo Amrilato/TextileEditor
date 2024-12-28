@@ -14,7 +14,7 @@ namespace TextileEditor.Shared.View.TextileEditor;
 public class TextileEditorViewContext : IBindingTextileEditorViewContext<TextileIndex, bool>, IBindingTextileEditorViewContext<int, Color>, IDisposable
 {
     public TextileEditorViewContext(TextileStructure structure,
-                                    ITextileEditorViewRenderPipelineProvider builder,
+                                    ITextileEditorViewRenderPipelineProvider provider,
                                     INotifyPropertyTextileEditorViewConfigure configure)
     {
         disposableBag = new();
@@ -22,12 +22,12 @@ public class TextileEditorViewContext : IBindingTextileEditorViewContext<Textile
         this.structure = structure ?? throw new ArgumentNullException(nameof(structure));
         TextileEditorEventHandler = new();
         TextileEditorColorEventHandler = new();
-        Textile = InteractivePainter<TextileIndex, bool, TextileSelector>.Create(this, builder.CreateTextile(), configure, disposableBag);
-        Heddle = InteractivePainter<TextileIndex, bool, HeddleSelector>.Create(this, builder.CreateHeddle(), configure, disposableBag);
-        Pedal = InteractivePainter<TextileIndex, bool, PedalSelector>.Create(this, builder.CreatePedal(), configure, disposableBag);
-        Tieup = InteractivePainter<TextileIndex, bool, TieupSelector>.Create(this, builder.CreateTieup(), configure, disposableBag);
-        HeddleColor = InteractivePainter<int, Color, HeddleColorSelector>.Create(this, builder.CreateHeddleColor(), configure, disposableBag);
-        PedalColor = InteractivePainter<int, Color, PedalColorSelector>.Create(this, builder.CreatePedalColor(), configure, disposableBag);
+        Textile = InteractivePainter<TextileIndex, bool, TextileSelector>.Create(this, provider.CreateTextile(), configure, disposableBag);
+        Heddle = InteractivePainter<TextileIndex, bool, HeddleSelector>.Create(this, provider.CreateHeddle(), configure, disposableBag);
+        Pedal = InteractivePainter<TextileIndex, bool, PedalSelector>.Create(this, provider.CreatePedal(), configure, disposableBag);
+        Tieup = InteractivePainter<TextileIndex, bool, TieupSelector>.Create(this, provider.CreateTieup(), configure, disposableBag);
+        HeddleColor = InteractivePainter<int, Color, HeddleColorSelector>.Create(this, provider.CreateHeddleColor(), configure, disposableBag);
+        PedalColor = InteractivePainter<int, Color, PedalColorSelector>.Create(this, provider.CreatePedalColor(), configure, disposableBag);
     }
 
 
@@ -44,6 +44,9 @@ public class TextileEditorViewContext : IBindingTextileEditorViewContext<Textile
 
     TextileEditorEventHandlerBundle<TextileIndex, bool> IBindingTextileEditorViewContext<TextileIndex, bool>.Bundle => TextileEditorEventHandler;
     TextileEditorEventHandlerBundle<int, Color> IBindingTextileEditorViewContext<int, Color>.Bundle => TextileEditorColorEventHandler;
+
+    ISynchronizationReactiveTextileEditorViewRenderer<TextileIndex, bool> IBindingTextileEditorViewContext<TextileIndex, bool>.HandleRenderer => TextileEditorEventHandler;
+    ISynchronizationReactiveTextileEditorViewRenderer<int, Color> IBindingTextileEditorViewContext<int, Color>.HandleRenderer => TextileEditorColorEventHandler;
     #endregion
 
     #region EventHandler
@@ -73,6 +76,7 @@ file interface IBindingTextileEditorViewContext<TIndex, TValue>
     TextileEditorViewContext Self { get; }
 
     TextileEditorEventHandlerBundle<TIndex, TValue> Bundle { get; }
+    ISynchronizationReactiveTextileEditorViewRenderer<TIndex, TValue> HandleRenderer { get; }
 }
 file class InteractivePainter<TIndex, TValue, TSelector> : TextileEditorViewPainter<TIndex, TValue, TSelector>, IInteractivePainter
     where TSelector : ITextileSelector<TIndex, TValue, TSelector>, IDisposable
@@ -88,11 +92,7 @@ file class InteractivePainter<TIndex, TValue, TSelector> : TextileEditorViewPain
         observableConfigure = configure;
         this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
         configure.PropertyChanged += Configure_PropertyChanged;
-        disposable = ((ISynchronizationReactiveTextileEditorViewRenderer<TIndex, TValue>)parent.Bundle).RenderStateChanged.Subscribe(u =>
-        {
-            if (RenderProgress.CurrentValue.Status == RenderProgressStates.Ready || RenderProgress.CurrentValue.Status == RenderProgressStates.Completed)
-                Report(new() { Status = RenderProgressStates.Ready });
-        });
+        disposable = parent.HandleRenderer.RenderStateChanged.Subscribe(_ => TryNotifyReady());
     }
 
     private void Configure_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -104,9 +104,9 @@ file class InteractivePainter<TIndex, TValue, TSelector> : TextileEditorViewPain
             case nameof(ITextileEditorViewConfigure.AreaSelectBorderColor):
             case nameof(ITextileEditorViewConfigure.IntersectionColor):
             case nameof(ITextileEditorViewConfigure.PastPreviewIntersectionColor):
-            case nameof(ITextileEditorViewConfigure.TieupPosition):
-                Initialize(surfacePainter.SKImageInfo, cancellationTokenSource.Token);
+                TryInitializeWithLock(surfacePainter.SKImageInfo, new(false));
                 break;
+            //case nameof(ITextileEditorViewConfigure.TieupPosition):
             default:
                 break;
         }
@@ -116,19 +116,18 @@ file class InteractivePainter<TIndex, TValue, TSelector> : TextileEditorViewPain
     private readonly IBindingTextileEditorViewContext<TIndex, TValue> parent;
     private readonly IDisposable disposable;
 
-    protected override void Paint(SKSurface surface, SKImageInfo info, SKImageInfo rawInfo)
+    protected override void Paint(SKSurface surface, SKImageInfo info, SKImageInfo rawInfo, IProgress<Progress> progress)
     {
-        base.Paint(surface, info, rawInfo);
-        ((ISynchronizationReactiveTextileEditorViewRenderer<TIndex, TValue>)parent.Bundle).Render(surface, info, parent.Structure, TSelector.Select(parent.Structure), configure, this, new() { MaxPhase = 1, Status = RenderProgressStates.Processing });
-        Report(new() { Phase = 1, MaxPhase = 1, Status = RenderProgressStates.Completed });
+        base.Paint(surface, info, rawInfo, progress);
+        progress.Report(parent.HandleRenderer.Render(surface, info, parent.Structure, TSelector.Select(parent.Structure), configure, progress, new() { MaxPhase = 1 }) with { Phase = 1 });
     }
 
-    public void OnClick(SKPoint point) => parent.Bundle.TextileEditorEventHandler.OnClick(point, TSelector.Select(parent.Structure), parent.Structure, configure);
-    public void OnPointerDown(SKPoint point) => parent.Bundle.TextileEditorEventHandler.OnPointerDown(point, TSelector.Select(parent.Structure), parent.Structure, configure);
-    public void OnPointerEnter(SKPoint point) => parent.Bundle.TextileEditorEventHandler.OnPointerEnter(point, TSelector.Select(parent.Structure), parent.Structure, configure);
-    public void OnPointerLeave(SKPoint point) => parent.Bundle.TextileEditorEventHandler.OnPointerLeave(point, TSelector.Select(parent.Structure), parent.Structure, configure);
-    public void OnPointerMove(SKPoint point) => parent.Bundle.TextileEditorEventHandler.OnPointerMove(point, TSelector.Select(parent.Structure), parent.Structure, configure);
-    public void OnPointerUp(SKPoint point) => parent.Bundle.TextileEditorEventHandler.OnPointerUp(point, TSelector.Select(parent.Structure), parent.Structure, configure);
+    public void OnClick(SKPoint point) => parent.Bundle.Handler.OnClick(point, TSelector.Select(parent.Structure), parent.Structure, configure);
+    public void OnPointerDown(SKPoint point) => parent.Bundle.Handler.OnPointerDown(point, TSelector.Select(parent.Structure), parent.Structure, configure);
+    public void OnPointerEnter(SKPoint point) => parent.Bundle.Handler.OnPointerEnter(point, TSelector.Select(parent.Structure), parent.Structure, configure);
+    public void OnPointerLeave(SKPoint point) => parent.Bundle.Handler.OnPointerLeave(point, TSelector.Select(parent.Structure), parent.Structure, configure);
+    public void OnPointerMove(SKPoint point) => parent.Bundle.Handler.OnPointerMove(point, TSelector.Select(parent.Structure), parent.Structure, configure);
+    public void OnPointerUp(SKPoint point) => parent.Bundle.Handler.OnPointerUp(point, TSelector.Select(parent.Structure), parent.Structure, configure);
 
     protected override void Dispose(bool disposing)
     {

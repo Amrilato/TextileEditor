@@ -14,7 +14,7 @@ public class Localizer(IWebStorage webStorage, IStringLocalizer<SharedResource> 
         var culture = await webStorage.GetItemAsync(BlazorCulture);
         try
         {
-            return culture is not null ? new CultureInfo(culture) : CultureInfo.InvariantCulture;
+            return culture is not null ? new CultureInfo(culture) : (SupportedLanguages.IsEmpty ? new("en-US") : SupportedLanguages[0]);
         }
         catch (Exception)
         {
@@ -24,7 +24,7 @@ public class Localizer(IWebStorage webStorage, IStringLocalizer<SharedResource> 
     public async ValueTask SetCulture(CultureInfo culture)
     {
         if (!SupportedLanguages.Contains(culture))
-            throw new NotSupportedException();
+            throw new NotSupportedException($"{culture.ToString()} is unsopported culture");
         if (CultureInfo.DefaultThreadCurrentCulture != culture)
         {
             CultureInfo.DefaultThreadCurrentCulture = culture;

@@ -3,21 +3,28 @@ using SkiaSharp;
 using System.Buffers;
 using System.ComponentModel;
 using TextileEditor.Shared.Serialization.Configuration;
-using TextileEditor.Shared.View.TextileEditor;
+using TextileEditor.Shared.View.Common;
 
 namespace TextileEditor.Shared.Services.Internal;
 
 internal class LazyAppSettings(IDataStorage dataStorage) : IAppSettings
 {
-
-    private static async Task<AppSettings?> LoadAsync(IDataStorage dataStorage)
+    private static async Task<AppSettings> LoadAsync(IDataStorage dataStorage)
     {
         using var owner = await dataStorage.LoadAsync(AppSettingKey);
-        return owner is not null ? AppSettingsSerializer.Deserialize(owner.Memory) : null;
+        try
+        {
+            return owner is not null ? AppSettingsSerializer.Deserialize(owner.Memory) : Default;
+        }
+        catch (Exception)
+        {
+            return Default;
+        }
     }
     private static TimeSpan Timeout => TimeSpan.FromSeconds(1);
+    private readonly Task<AppSettings> loadTask = LoadAsync(dataStorage);
+    private static AppSettings Default => new() { GridSize = new(1, 20, 20), BorderColor = SKColors.Black, IntersectionColor = SKColors.Blue };
     private const string AppSettingKey = nameof(AppSettings);
-    private readonly Task<AppSettings?> loadTask = LoadAsync(dataStorage);
     private AppSettings? appSettings;
     private AppSettings AppSettings
     {
@@ -26,9 +33,9 @@ internal class LazyAppSettings(IDataStorage dataStorage) : IAppSettings
             if (appSettings is not null)
                 return appSettings;
             if (SpinWait.SpinUntil(() => loadTask.IsCompleted, Timeout) && loadTask.IsCompletedSuccessfully)
-                return appSettings = loadTask.Result ?? new();
+                return appSettings = loadTask.Result;
             else
-                return appSettings = new();
+                return appSettings = Default;
         }
     }
 

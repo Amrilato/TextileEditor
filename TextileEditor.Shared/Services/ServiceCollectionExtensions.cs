@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IDataStorage, TDataStorage>()
             .AddScoped<ITextileEditorViewRenderPipelineProvider, TTextileEditorViewRenderPipelineProvider>()
             .AddScoped<ITextilePreviewRenderPipelineProvider, TTextilePreviewRenderPipelineProvider>()
+            .AddScoped<ITextileSessionStorage, TextileSessionStorage>()
             .AddScoped<IAppSettings, LazyAppSettings>();
 
         return serviceDescriptors;

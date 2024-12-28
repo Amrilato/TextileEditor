@@ -1,16 +1,14 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
 using System.Diagnostics.CodeAnalysis;
 using TextileEditor.Shared.Services;
-using TextileEditor.Shared.Services.TextileSessionStorage;
-using TextileEditor.Web.Localization;
+using TextileEditor.Web.Services;
 
 namespace TextileEditor.Web.Layout;
 
 public partial class TextileSessionView
 {
     [Inject]
-    public required IStringLocalizer<SharedResource> Localizer { get; init; }
+    public required ILocalizer Localizer { get; init; }
     [Inject]
     public required ITextileSessionStorage Storage { get; init; }
     [Parameter]
@@ -21,11 +19,11 @@ public partial class TextileSessionView
     private bool renaming = false;
     private string SessionName
     {
-        get => Session?.Name ?? "please enter textile session name";
+        get => Session?.TextileData.Name ?? "please enter textile session name";
         set
         {
             if (Session is not null)
-                Session.Name = value;
+                Session.TextileData.Name = value;
             renaming = false;
             StateHasChanged();
         }
@@ -39,7 +37,7 @@ public partial class TextileSessionView
     }
     [MemberNotNullWhen(true, nameof(Session), nameof(SessionManager))]
     private bool Check => Session is not null && SessionManager is not null;
-    private bool IsOpenSession => Check && SessionManager.CurrentSession is not null && Session.Guid == SessionManager.CurrentSession.Guid;
+    private bool IsOpenSession => Check && SessionManager.CurrentSession is not null && Session.TextileData.Guid == SessionManager.CurrentSession.TextileData.Guid;
     private async Task OpenSession()
     {
         if (Check)

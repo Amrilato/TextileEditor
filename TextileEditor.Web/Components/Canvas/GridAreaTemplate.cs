@@ -1,4 +1,4 @@
-﻿using TextileEditor.Shared.View.TextileEditor;
+﻿using TextileEditor.Shared.View.Common;
 
 namespace TextileEditor.Shared.Shared.Common;
 

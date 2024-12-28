@@ -1,20 +1,19 @@
 ﻿@namespace TextileEditor.Web.Layout
 
 <FluentButton id="FileMenuOpen" Appearance="Appearance.Stealth" @onclick="@(() => open = !open)">
-    @Localizer[SharedResource.File]
+    @Localizer.GetString(SharedResource.File)
 </FluentButton>
 
 <FluentMenu Anchor="FileMenuOpen" @bind-Open="open" VerticalThreshold="170">
-    <FluentMenuItem Label="@Localizer[SharedResource.New]" OnClick="CreateSessionAsync" />
-    <FluentMenuItem Label="@Localizer[SharedResource.Upload]" OnClick="UploadTextileAsync" />
-    <FluentMenuItem Label="@Localizer[SharedResource.Save]">
+    <FluentMenuItem Label="@Localizer.GetString(SharedResource.New)" OnClick="CreateSessionAsync" />
+    <FluentMenuItem Label="@Localizer.GetString(SharedResource.Upload)" OnClick="UploadTextileAsync" />
+    <FluentMenuItem Label="@Localizer.GetString(SharedResource.Save)">
         <MenuItems>
-            <FluentMenuItem Label="@Localizer[SharedResource.Save]" OnClick="DownloadSessionAsync" />
-            <FluentMenuItem Label="@Localizer[SharedResource.GenerateDownloadLink]" OnClick="GenerateDownloadLinkAsync" />
+            <FluentMenuItem Label="@Localizer.GetString(SharedResource.Save)" OnClick="DownloadSessionAsync" />
+            <FluentMenuItem Label="@Localizer.GetString(SharedResource.GenerateDownloadLink)" OnClick="GenerateDownloadLinkAsync" />
         </MenuItems>
     </FluentMenuItem>
-    <FluentMenuItem Label="@Localizer[SharedResource.SaveAs]" OnClick="OpenDialogAsync" />
-    <FluentMenuItem Label="Save Local Storage" OnClick="ForceSave" />
+    <FluentMenuItem Label="@Localizer.GetString(SharedResource.SaveAs)" OnClick="OpenDialogAsync" />
 </FluentMenu>
 
 <FluentInputFile @ref="@FileUploader"
