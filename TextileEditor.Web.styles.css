@@ -1,4 +1,4 @@
-@import '_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.dwk6czdzfo.bundle.scp.css';
+@import '_content/Microsoft.FluentUI.AspNetCore.Components/Microsoft.FluentUI.AspNetCore.Components.nv5wbdzqw1.bundle.scp.css';
 
 /* /Components/Canvas/Canvas.razor.rz.scp.css */
 #container[b-esl3fhlqu1] {
@@ -106,6 +106,28 @@
     height: 1px;
     background-color: var(--accent-fill-rest);
 }
+
+.github-link[b-3spdg0a25k] {
+    color: var(--neutral-fill-inverse-rest); /* リンクテキストを黒に設定 */
+    text-decoration: none;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+.github-icon[b-3spdg0a25k] {
+    margin-right: 8px;
+    filter: grayscale(100%); /* アイコンを白黒に設定 */
+    transition: filter 0.3s ease, color 0.3s ease; /* ホバー時のスムーズな変化 */
+}
+
+.github-link:hover[b-3spdg0a25k] {
+    color: var(--accent-fill-rest); /* ホバー時にリンクテキストをグレーに変更 */
+}
+
+    .github-link:hover .github-icon[b-3spdg0a25k] {
+        filter: none; /* ホバー時に白黒を解除 */
+    }
 /* /Layout/MainLayout/UtilComponents/Progress.razor.rz.scp.css */
 .progress-container[b-2u2nzhc48n] {
     background-color: var(--neutral-layer-card-container);
