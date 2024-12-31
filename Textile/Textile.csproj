@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\TextileEditor.Web\Layout\MainLayout\Component.razor" Link="Component.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="DotNext.IO" Version="5.14.0" />
   </ItemGroup>
 

@@ -41,7 +41,7 @@ public abstract class SynchronizationTextileIntersectionRenderer<TIndex, TValue>
     public Progress UpdateDifferences(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TIndex, TValue> textile, ReadOnlyMemory<ChangedValue<TIndex, TValue>> changedValues, ITextileEditorViewConfigure configure, CancellationToken token, IProgress<Progress> progress, Progress currentProgress)
     {
         var setting = configure.GridSize.ToSettings(textile);
-        currentProgress = currentProgress with { Step = 0, MaxStep = GetMaxStep(textile) };
+        currentProgress = currentProgress with { Step = 0, MaxStep = changedValues.Length };
         for (int i = 0; i < changedValues.Length; i++)
         {
             token.ThrowIfCancellationRequested();

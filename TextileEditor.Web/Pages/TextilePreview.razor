@@ -1,75 +1,38 @@
 ﻿@page "/preview"
 @using TextileEditor.Web.Components
+@using TextileEditor.Web.Resources
 
-@if (TextilePreviewContext is not null)
-{
 
-    <FluentStack Style="height: 100%" Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Left" VerticalAlignment="VerticalAlignment.Top">
-        <FluentStack>
-            <FluentStack Orientation="Orientation.Vertical">
-                <FluentStack>
-                    <FluentSlider Label="@Localizer.GetString(SharedResource.SelectAHorizontalRepeat)" Min="1" Max="100" Step="1" @bind-Value=AppSettings.RepeatHorizontal>
-                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                        <FluentSliderLabel Position="10">10</FluentSliderLabel>
-                        <FluentSliderLabel Position="20">20</FluentSliderLabel>
-                        <FluentSliderLabel Position="30">30</FluentSliderLabel>
-                        <FluentSliderLabel Position="40">40</FluentSliderLabel>
-                        <FluentSliderLabel Position="50">50</FluentSliderLabel>
-                        <FluentSliderLabel Position="60">60</FluentSliderLabel>
-                        <FluentSliderLabel Position="70">70</FluentSliderLabel>
-                        <FluentSliderLabel Position="80">80</FluentSliderLabel>
-                        <FluentSliderLabel Position="90">90</FluentSliderLabel>
-                        <FluentSliderLabel Position="100">100</FluentSliderLabel>
-                    </FluentSlider>
-                    <FluentSlider Label="@Localizer.GetString(SharedResource.SelectAVerticalRepeat)" Min="1" Max="100" Step="1" @bind-Value=AppSettings.RepeatVertical>
-                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                        <FluentSliderLabel Position="10">10</FluentSliderLabel>
-                        <FluentSliderLabel Position="20">20</FluentSliderLabel>
-                        <FluentSliderLabel Position="30">30</FluentSliderLabel>
-                        <FluentSliderLabel Position="40">40</FluentSliderLabel>
-                        <FluentSliderLabel Position="50">50</FluentSliderLabel>
-                        <FluentSliderLabel Position="60">60</FluentSliderLabel>
-                        <FluentSliderLabel Position="70">70</FluentSliderLabel>
-                        <FluentSliderLabel Position="80">80</FluentSliderLabel>
-                        <FluentSliderLabel Position="90">90</FluentSliderLabel>
-                        <FluentSliderLabel Position="100">100</FluentSliderLabel>
-                    </FluentSlider>
-                </FluentStack>
-                <FluentStack>
-                    <FluentSlider Label="@Localizer.GetString(SharedResource.SelectAPixelWidth)" Min="1" Max="10" Step="1" @bind-Value=PixelSizeX>
-                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
-                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
-                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
-                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
-                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
-                        <FluentSliderLabel Position="7">7</FluentSliderLabel>
-                        <FluentSliderLabel Position="8">8</FluentSliderLabel>
-                        <FluentSliderLabel Position="9">9</FluentSliderLabel>
-                        <FluentSliderLabel Position="10">10</FluentSliderLabel>
-                    </FluentSlider>
-                    <FluentSlider Label="@Localizer.GetString(SharedResource.SelectAPixelHeight)" Min="1" Max="10" Step="1" @bind-Value=PixelSizeY>
-                        <FluentSliderLabel Position="1">1</FluentSliderLabel>
-                        <FluentSliderLabel Position="2">2</FluentSliderLabel>
-                        <FluentSliderLabel Position="3">3</FluentSliderLabel>
-                        <FluentSliderLabel Position="4">4</FluentSliderLabel>
-                        <FluentSliderLabel Position="5">5</FluentSliderLabel>
-                        <FluentSliderLabel Position="6">6</FluentSliderLabel>
-                        <FluentSliderLabel Position="7">7</FluentSliderLabel>
-                        <FluentSliderLabel Position="8">8</FluentSliderLabel>
-                        <FluentSliderLabel Position="9">9</FluentSliderLabel>
-                        <FluentSliderLabel Position="10">10</FluentSliderLabel>
-                    </FluentSlider>
-                </FluentStack>
-            </FluentStack>
-        </FluentStack>
-        <Canvas Painter="Session?.TextilePreviewContext.Painter" />
+<FluentStack Style="height: 100%" Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Left" VerticalAlignment="VerticalAlignment.Top">
+    <FluentStack>
+        <FluentSpacer />
+        <FluentButton id="myPopoverButtonr" IconStart="@(new Icons.Regular.Size20.Settings())" Appearance="Appearance.Accent" @onclick="() => _visible = !_visible" />
     </FluentStack>
-    <FluentOverlay @bind-Visible=visible
-                   Dismissable=false
-                   Opacity="0.4"
-                   Alignment="@Align.Center"
-                   Justification="@JustifyContent.Center">
-        <FluentProgressRing />
-    </FluentOverlay>
+    @if (Session is not null)
+    {
+        <TextileEditor.Web.Components.TextilePreview Session="Session" />
+    }
+    else
+    {
+        <FluentStack Style="height: 100%" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" @onclick="StateHasChanged">
+            @Localizer.GetString(SharedResource.NotSelectedTextile)
+        </FluentStack>
+    }
+</FluentStack>
+
+<FluentPopover Style="width: 300px;" VerticalThreshold="270" AnchorId="myPopoverButtonr" @bind-Open="_visible">
+    <Header>
+        <FluentStack>
+            Preview Configuration
+            <FluentSpacer />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.Save())" />
+        </FluentStack>
+    </Header>
+    <Body>
+        <Slider />
+    </Body>
+</FluentPopover>
+
+@code {
+    bool _visible;
 }

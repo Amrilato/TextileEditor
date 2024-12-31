@@ -4,6 +4,7 @@ using Microsoft.FluentUI.AspNetCore.Components;
 using System.Buffers;
 using Textile.Data;
 using TextileEditor.Shared.Services;
+using TextileEditor.Web.Resources;
 using TextileEditor.Web.Services;
 
 namespace TextileEditor.Web.Layout;

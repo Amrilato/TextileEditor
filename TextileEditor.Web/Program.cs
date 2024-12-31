@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Localization;
@@ -6,6 +7,7 @@ using TextileEditor.Shared.Services;
 using TextileEditor.Shared.View.TextilePreview.Pipeline;
 using TextileEditor.Web;
 using TextileEditor.Web.Renderer;
+using TextileEditor.Web.Resources;
 using TextileEditor.Web.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -19,12 +21,14 @@ builder.Services.AddScoped<IWebStorage, WebStorage>();
 builder.Services.AddScoped<FileDownloadService>();
 builder.Services.AddScoped<ILocalizer>(sp => new Localizer(sp.GetRequiredService<IWebStorage>(), sp.GetRequiredService<IStringLocalizer<SharedResource>>(), [new("en-US"), new("ja-JP")]));
 builder.Services.AddTextileServices<DataStorage, SynchronizationTextileEditorRendererPipelineProvider, DefaultTextilePreviewRenderPipelineProvider>();
-Console.WriteLine("0.0.10");
+var culture = new CultureInfo("ja-JP");
+CultureInfo.DefaultThreadCurrentCulture = culture;
+CultureInfo.DefaultThreadCurrentUICulture = culture;
 
 var webAssemblyHost = builder.Build();
 
-var localizer = webAssemblyHost.Services.GetService<ILocalizer>();
-if (localizer is not null)
-    await localizer.SetCulture(await localizer.GetCulture());
+//var localizer = webAssemblyHost.Services.GetService<ILocalizer>();
+//if (localizer is not null)
+//    await localizer.SetCulture(new("ja-JP"));
 
 await webAssemblyHost.RunAsync();

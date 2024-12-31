@@ -1,6 +1,7 @@
 ﻿using SkiaSharp;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using TextileEditor.Shared.Services;
 using TextileEditor.Shared.View.Common;
 
 namespace TextileEditor.Web.Services.BackwardCompatibility;
@@ -75,29 +76,29 @@ public class EditorConfigure(IWebStorage webStorageService)
 
     private const string KeyPrefix = "__EditorConfig__";
     private static string GenerateKey(string key) => $"{KeyPrefix}{key}";
-    public async Task LoadSettingsAsync()
+    public async Task LoadSettingsAsync(IAppSettings appSettings)
     {
         if (!SKColor.TryParse(await webStorageService.GetItemAsync(GenerateKey(nameof(BorderColor))), out borderColor))
-            borderColor = SKColors.AliceBlue;
+            borderColor = appSettings.BorderColor;
         if (!SKColor.TryParse(await webStorageService.GetItemAsync(GenerateKey(nameof(SelectBorderColor))), out selectBorderColor))
-            selectBorderColor = SKColors.OrangeRed;
+            selectBorderColor = appSettings.AreaSelectBorderColor;
         if (!SKColor.TryParse(await webStorageService.GetItemAsync(GenerateKey(nameof(FillColor))), out fillColor))
-            fillColor = SKColors.AliceBlue;
+            fillColor = appSettings.IntersectionColor;
         if (!SKColor.TryParse(await webStorageService.GetItemAsync(GenerateKey(nameof(PastePreviewFillColor))), out pastePreviewFillColor))
-            pastePreviewFillColor = SKColors.Coral;
+            pastePreviewFillColor = appSettings.PastPreviewIntersectionColor;
         if (!Enum.TryParse(await webStorageService.GetItemAsync(GenerateKey(nameof(TieupPosition))), false, out tieupPosition))
-            tieupPosition = Corner.TopLeft;
+            tieupPosition = appSettings.TieupPosition;
         if (!GridSize.TryParse(await webStorageService.GetItemAsync(GenerateKey(nameof(GridSize))), out gridSize))
-            gridSize = new(1, 20, 20);
+            gridSize = appSettings.GridSize;
         if (!int.TryParse(await webStorageService.GetItemAsync(GenerateKey(nameof(PreviewHorizontalRepeat))), out previewHorizontalRepeat))
-            previewHorizontalRepeat = 1;
+            previewHorizontalRepeat = appSettings.RepeatHorizontal;
         if (!int.TryParse(await webStorageService.GetItemAsync(GenerateKey(nameof(PreviewVerticalRepeat))), out previewVerticalRepeat))
-            previewVerticalRepeat = 1;
+            previewVerticalRepeat = appSettings.RepeatVertical;
         if (int.TryParse(await webStorageService.GetItemAsync(GenerateKey($"{nameof(PreviewPixelSize)}Width")), out var pixelSizeWidth) &&
             int.TryParse(await webStorageService.GetItemAsync(GenerateKey($"{nameof(PreviewPixelSize)}Height")), out var pixelSizeHeight))
             previewPixelSize = new(pixelSizeWidth, pixelSizeHeight);
         else
-            previewPixelSize = new(1, 1);
+            previewPixelSize = appSettings.PixelSize;
     }
 
     public async Task SaveSettingsAsync()
@@ -112,5 +113,18 @@ public class EditorConfigure(IWebStorage webStorageService)
         await webStorageService.SetItemAsync(GenerateKey(nameof(PreviewVerticalRepeat)), previewVerticalRepeat.ToString());
         await webStorageService.SetItemAsync(GenerateKey($"{nameof(PreviewPixelSize)}Width"), previewPixelSize.Width.ToString());
         await webStorageService.SetItemAsync(GenerateKey($"{nameof(PreviewPixelSize)}Height"), previewPixelSize.Height.ToString());
+    }
+    public async Task RemoveSettingsAsync()
+    {
+        await webStorageService.RemoveItemAsync(GenerateKey(nameof(BorderColor)));
+        await webStorageService.RemoveItemAsync(GenerateKey(nameof(SelectBorderColor)));
+        await webStorageService.RemoveItemAsync(GenerateKey(nameof(FillColor)));
+        await webStorageService.RemoveItemAsync(GenerateKey(nameof(PastePreviewFillColor)));
+        await webStorageService.RemoveItemAsync(GenerateKey(nameof(TieupPosition)));
+        await webStorageService.RemoveItemAsync(GenerateKey(nameof(GridSize)));
+        await webStorageService.RemoveItemAsync(GenerateKey(nameof(PreviewHorizontalRepeat)));
+        await webStorageService.RemoveItemAsync(GenerateKey(nameof(PreviewVerticalRepeat)));
+        await webStorageService.RemoveItemAsync(GenerateKey($"{nameof(PreviewPixelSize)}Width"));
+        await webStorageService.RemoveItemAsync(GenerateKey($"{nameof(PreviewPixelSize)}Height"));
     }
 }

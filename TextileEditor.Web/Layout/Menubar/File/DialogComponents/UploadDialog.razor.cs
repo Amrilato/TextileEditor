@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.FluentUI.AspNetCore.Components;
 using System.Buffers;
 using TextileEditor.Shared.Services;
+using TextileEditor.Web.Resources;
 
 namespace TextileEditor.Web.Layout;
 

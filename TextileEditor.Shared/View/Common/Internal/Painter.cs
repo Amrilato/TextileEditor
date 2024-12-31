@@ -43,34 +43,37 @@ public abstract class Painter : IPainter, IDisposable
     /// <returns>True if painting succeeded, otherwise false.</returns>
     public bool TryPaintSurface(SKSurface surface, SKImageInfo info, SKImageInfo rawInfo)
     {
-        bool shouldExitLock = false;
+        bool shouldExitLock = true;
         if (@lock.TryEnter())
         {
             try
             {
+                if (!ValidateSKImageInfo(info))
+                {
+                    shouldExitLock = false;
+                    _ = BeginInitialization(info, new CancellationTokenSource().Token);
+                    return false;
+                }
+
                 switch (renderProgress.CurrentValue.Status)
                 {
                     case RenderProgressStates.NotStarted:
                     case RenderProgressStates.Failed:
                     case RenderProgressStates.Canceled:
-                        shouldExitLock = true;
+                        shouldExitLock = false;
                         _ = BeginInitialization(info, new CancellationTokenSource().Token);
                         return false;
                     case RenderProgressStates.Ready:
-                    case RenderProgressStates.Completed:
-                        shouldExitLock = true;
+                        shouldExitLock = false;
                         BeginPainting(surface, info, rawInfo);
                         return true;
-                    //case RenderProgressStates.Initializing:
-                    //case RenderProgressStates.Processing:
-                    //    break;
                     default:
                         break;
                 }
             }
             finally
             {
-                if (!shouldExitLock)
+                if (shouldExitLock)
                     @lock.Exit();
             }
         }
@@ -111,7 +114,8 @@ public abstract class Painter : IPainter, IDisposable
         RenderProgressStates states = RenderProgressStates.Completed;
         try
         {
-            Paint(surface, info, rawInfo, notifyProcessingProgress);
+            if (!Paint(surface, info, rawInfo, notifyProcessingProgress))
+                states = RenderProgressStates.Failed;
         }
         catch (Exception)
         {
@@ -195,7 +199,16 @@ public abstract class Painter : IPainter, IDisposable
     /// <param name="info">The image info for the surface.</param>
     /// <param name="rawInfo">The raw image info for the surface.</param>
     /// <param name="progress">The progress reporter.</param>
-    protected abstract void Paint(SKSurface surface, SKImageInfo info, SKImageInfo rawInfo, IProgress<Progress> progress);
+    /// <returns>True if painting succeeded, otherwise false.</returns>
+    protected abstract bool Paint(SKSurface surface, SKImageInfo info, SKImageInfo rawInfo, IProgress<Progress> progress);
+
+    /// <summary>
+    /// Validates the given SKImageInfo to determine if it meets specific requirements.
+    /// </summary>
+    /// <param name="info">The SKImageInfo to validate.</param>
+    /// <returns>True if the SKImageInfo is valid, otherwise false.</returns>
+    protected abstract bool ValidateSKImageInfo(SKImageInfo info);
+
 
     /// <summary>
     /// Notifies that the progress is ready if applicable.
@@ -204,6 +217,20 @@ public abstract class Painter : IPainter, IDisposable
     {
         if (renderProgress.CurrentValue.Status == RenderProgressStates.Ready || renderProgress.CurrentValue.Status == RenderProgressStates.Completed)
             renderProgress.OnNext(new() { Status = RenderProgressStates.Ready });
+    }
+
+    /// <summary>
+    /// Resets the render progress status to Ready if it is currently Completed.
+    /// </summary>
+    public void ResetStatus()
+    {
+        if (renderProgress.CurrentValue.Status == RenderProgressStates.Completed)
+            renderProgress.OnNext(new() { Status = RenderProgressStates.Ready });
+    }
+
+    protected void SetStatus(RenderProgressStates states)
+    {
+        renderProgress.OnNext(new() { Status = states });
     }
 
     /// <summary>

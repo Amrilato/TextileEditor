@@ -1,0 +1,7 @@
+﻿@namespace TextileEditor.Web.Components
+@using TextileEditor.Shared.Shared.Common
+
+@if (Session is not null)
+{
+    <Canvas Painter="Session.TextilePreviewContext.Painter" />
+}

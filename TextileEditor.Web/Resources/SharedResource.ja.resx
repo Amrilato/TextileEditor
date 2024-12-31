@@ -261,4 +261,25 @@
   <data name="Home" xml:space="preserve">
     <value>ホーム</value>
   </data>
+  <data name="BorderColor" xml:space="preserve">
+    <value>罫線の色</value>
+  </data>
+  <data name="IntersectionColor" xml:space="preserve">
+    <value>設定のセルの色</value>
+  </data>
+  <data name="PasteIntersectionColor" xml:space="preserve">
+    <value>貼り付け時のセルの色</value>
+  </data>
+  <data name="AreaSelectBorderColor" xml:space="preserve">
+    <value>範囲選択時の罫線の色</value>
+  </data>
+  <data name="CellWidth" xml:space="preserve">
+    <value>セルの幅</value>
+  </data>
+  <data name="CellHeight" xml:space="preserve">
+    <value>セルの高さ</value>
+  </data>
+  <data name="ClickToFillColor" xml:space="preserve">
+    <value>塗りつぶし</value>
+  </data>
 </root>

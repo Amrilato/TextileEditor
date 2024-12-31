@@ -12,7 +12,7 @@ namespace TextileEditor.Shared.View.TextileEditor;
 internal abstract class TextileEditorViewPainter<TIndex, TValue, TSelector> : Painter, ITextileChangedWatcher<TIndex, TValue>, IDisposable
     where TSelector : ITextileSelector<TIndex, TValue, TSelector>, IDisposable
 {
-    private Task renderTask = Task.FromException(new TaskCanceledException());
+    private Task renderTask = Task.FromException(new OperationCanceledException());
     private readonly ConcurrentQueue<ChangedValue<TIndex, TValue>[]> ChangedValueQueue = new();
     protected readonly IManagedMemorySKSurface surfacePainter = ManagedMemorySKSurface.Create();
     private CancellationTokenSource cancellationTokenSource;
@@ -36,7 +36,7 @@ internal abstract class TextileEditorViewPainter<TIndex, TValue, TSelector> : Pa
     {
         var previCancellationTokenSource = cancellationTokenSource;
         cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-        if (surfacePainter.SKImageInfo == info)
+        if (surfacePainter.SKImageInfo == info && !previCancellationTokenSource.IsCancellationRequested)
         {
             switch (renderTask.Status)
             {
@@ -56,7 +56,7 @@ internal abstract class TextileEditorViewPainter<TIndex, TValue, TSelector> : Pa
                 case TaskStatus.Canceled:
                 case TaskStatus.Faulted:
                     ChangedValueQueue.Clear();
-                    renderTask = Render(this, info, progress, new(), token);
+                    renderTask = renderTask.ContinueWith(s => Render(this, info, progress, new(), token), TaskContinuationOptions.None).Unwrap();
                     break;
                 default:
                     break;
@@ -64,7 +64,9 @@ internal abstract class TextileEditorViewPainter<TIndex, TValue, TSelector> : Pa
         }
         else
         {
-            previCancellationTokenSource.Cancel();
+            if(!previCancellationTokenSource.IsCancellationRequested)
+                previCancellationTokenSource.Cancel();
+            ChangedValueQueue.Clear();
             renderTask = renderTask.ContinueWith(s => Render(this, info, progress, new(), token), TaskContinuationOptions.None).Unwrap();
         }
         return renderTask;
@@ -89,11 +91,15 @@ internal abstract class TextileEditorViewPainter<TIndex, TValue, TSelector> : Pa
         }
     }
 
-    protected override void Paint(SKSurface surface, SKImageInfo info, SKImageInfo rawInfo, IProgress<Progress> progress) 
-    { 
+    protected override bool Paint(SKSurface surface, SKImageInfo info, SKImageInfo rawInfo, IProgress<Progress> progress) 
+    {
+        if (!surfacePainter.SKImageInfo.Equals(info))
+            return false;
+
         using SKPaint sKPaint = new() { BlendMode = SKBlendMode.Src };
         using var source = surfacePainter.CreateSurface(info);
         surface.Canvas.DrawSurface(source.SKSurface, 0, 0, sKPaint);
+        return true;
     }
 
     public void OnChanged(ReadOnlySpan<ChangedValue<TIndex, TValue>> changedValues)
@@ -102,6 +108,12 @@ internal abstract class TextileEditorViewPainter<TIndex, TValue, TSelector> : Pa
         changedValues.CopyTo(buffer);
         ChangedValueQueue.Enqueue(buffer);
         InitializeWithLock(surfacePainter.SKImageInfo, cancellationTokenSource.Token);
+    }
+    protected override bool ValidateSKImageInfo(SKImageInfo info) => surfacePainter.SKImageInfo.Equals(info);
+    protected void CancelCurrentCache()
+    {
+        SetStatus(RenderProgressStates.NotStarted);
+        cancellationTokenSource.Cancel();
     }
 
     protected override void Dispose(bool disposing)

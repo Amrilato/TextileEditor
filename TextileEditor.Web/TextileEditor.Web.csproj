@@ -13,12 +13,17 @@
 		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.11.0" />
 		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.11.0" />
 		<PackageReference Include="SkiaSharp.Views.Blazor" Version="3.116.1" />
+		<PackageReference Include="PublishSPAforGitHubPages.Build" Version="3.0.0" />
 	</ItemGroup>
 
+	<PropertyGroup>
+		<GHPages>true</GHPages>
+	</PropertyGroup>
+	
 	<ItemGroup>
 		<ProjectReference Include="..\TextileEditor.Shared\TextileEditor.Shared.csproj" />
 	</ItemGroup>
-
+	
 	<PropertyGroup>
 		<BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
 	</PropertyGroup>

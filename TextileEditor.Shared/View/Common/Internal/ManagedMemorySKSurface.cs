@@ -62,10 +62,18 @@ internal class ManagedMemorySKSurface : IManagedMemorySKSurface
     /// <returns>An <see cref="SKSurfaceOwner"/> that manages the created surface.</returns>
     public SKSurfaceOwner CreateSurface(out SKImageInfo info)
     {
-        Enter();
-        CreateBitmap(SKImageInfo);
-        info = SKImageInfo;
-        return new(this, (SKSurface?)SKSurface.Create(SKImageInfo, pixelsHandle.AddrOfPinnedObject(), SKImageInfo.RowBytes) ?? throw new InvalidOperationException("configuration is not supported."));
+        try
+        {
+            Enter();
+            CreateBitmap(SKImageInfo);
+            info = SKImageInfo;
+            return new(this, (SKSurface?)SKSurface.Create(SKImageInfo, pixelsHandle.AddrOfPinnedObject(), SKImageInfo.RowBytes) ?? throw new InvalidOperationException("configuration is not supported."));
+        }
+        catch (Exception)
+        {
+            Exit();
+            throw;
+        }
     }
 
     /// <summary>
@@ -75,9 +83,17 @@ internal class ManagedMemorySKSurface : IManagedMemorySKSurface
     /// <returns>An <see cref="SKSurfaceOwner"/> that manages the created surface.</returns>
     public SKSurfaceOwner CreateSurface(SKImageInfo sourceInfo)
     {
-        Enter();
-        CreateBitmap(sourceInfo);
-        return new(this, (SKSurface?)SKSurface.Create(SKImageInfo, pixelsHandle.AddrOfPinnedObject(), SKImageInfo.RowBytes) ?? throw new InvalidOperationException("configuration is not supported."));
+        try
+        {
+            Enter();
+            CreateBitmap(sourceInfo);
+            return new(this, (SKSurface?)SKSurface.Create(sourceInfo, pixelsHandle.AddrOfPinnedObject(), sourceInfo.RowBytes) ?? throw new InvalidOperationException("configuration is not supported."));
+        }
+        catch (Exception)
+        {
+            Exit();
+            throw;
+        }
     }
 
     /// <summary>

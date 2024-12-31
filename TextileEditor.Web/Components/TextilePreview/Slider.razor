@@ -1,0 +1,38 @@
+﻿@namespace TextileEditor.Web.Components
+@using TextileEditor.Web.Resources
+
+<FluentStack Orientation="Orientation.Vertical">
+    <FluentSlider Label="@Localizer.GetString(SharedResource.SelectAHorizontalRepeat)" Min="1" Max="50" Step="1" @bind-Value=AppSettings.RepeatHorizontal>
+        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+        <FluentSliderLabel Position="10">10</FluentSliderLabel>
+        <FluentSliderLabel Position="20">20</FluentSliderLabel>
+        <FluentSliderLabel Position="30">30</FluentSliderLabel>
+        <FluentSliderLabel Position="40">40</FluentSliderLabel>
+        <FluentSliderLabel Position="50">50</FluentSliderLabel>
+    </FluentSlider>
+    <FluentSpacer />
+    <FluentSlider Label="@Localizer.GetString(SharedResource.SelectAVerticalRepeat)" Min="1" Max="50" Step="1" @bind-Value=AppSettings.RepeatVertical>
+        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+        <FluentSliderLabel Position="10">10</FluentSliderLabel>
+        <FluentSliderLabel Position="20">20</FluentSliderLabel>
+        <FluentSliderLabel Position="30">30</FluentSliderLabel>
+        <FluentSliderLabel Position="40">40</FluentSliderLabel>
+        <FluentSliderLabel Position="50">50</FluentSliderLabel>
+    </FluentSlider>
+    <FluentSpacer />
+    <FluentSlider Label="@Localizer.GetString(SharedResource.SelectAPixelWidth)" Min="1" Max="5" Step="1" @bind-Value=PixelSizeX>
+        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+        <FluentSliderLabel Position="2">2</FluentSliderLabel>
+        <FluentSliderLabel Position="3">3</FluentSliderLabel>
+        <FluentSliderLabel Position="4">4</FluentSliderLabel>
+        <FluentSliderLabel Position="5">5</FluentSliderLabel>
+    </FluentSlider>
+    <FluentSpacer />
+    <FluentSlider Label="@Localizer.GetString(SharedResource.SelectAPixelHeight)" Min="1" Max="5" Step="1" @bind-Value=PixelSizeY>
+        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+        <FluentSliderLabel Position="2">2</FluentSliderLabel>
+        <FluentSliderLabel Position="3">3</FluentSliderLabel>
+        <FluentSliderLabel Position="4">4</FluentSliderLabel>
+        <FluentSliderLabel Position="5">5</FluentSliderLabel>
+    </FluentSlider>
+</FluentStack>

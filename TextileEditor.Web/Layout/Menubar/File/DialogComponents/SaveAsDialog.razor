@@ -1,4 +1,5 @@
 ﻿@namespace TextileEditor.Web.Layout
+@using TextileEditor.Web.Resources
 @implements IDialogContentComponent<SaveAsDialogContent>
 
 <FluentTextField @bind-Value="@Content.FileName">@Localizer.GetString(SharedResource.FileName):</FluentTextField>

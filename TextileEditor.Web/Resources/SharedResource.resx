@@ -261,4 +261,25 @@
   <data name="Home" xml:space="preserve">
     <value>Home</value>
   </data>
+  <data name="BorderColor" xml:space="preserve">
+    <value>Border Color</value>
+  </data>
+  <data name="IntersectionColor" xml:space="preserve">
+    <value>Setting Cell Color</value>
+  </data>
+  <data name="PasteIntersectionColor" xml:space="preserve">
+    <value>Paste Intersection Color</value>
+  </data>
+  <data name="AreaSelectBorderColor" xml:space="preserve">
+    <value>Area Select Border Color</value>
+  </data>
+  <data name="CellWidth" xml:space="preserve">
+    <value>Cell Width</value>
+  </data>
+  <data name="CellHeight" xml:space="preserve">
+    <value>Cell Height</value>
+  </data>
+  <data name="ClickToFillColor" xml:space="preserve">
+    <value>Fill with color</value>
+  </data>
 </root>

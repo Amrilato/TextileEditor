@@ -26,4 +26,9 @@ public interface IPainter
     /// Gets the size of the canvas.
     /// </summary>
     SKSizeI CanvasSize { get; }
+
+    /// <summary>
+    /// Resets the render progress status to Ready if it is currently Completed.
+    /// </summary>
+    void ResetStatus();
 }

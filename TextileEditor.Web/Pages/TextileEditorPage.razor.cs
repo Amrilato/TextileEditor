@@ -33,7 +33,8 @@ public partial class TextileEditorPage : IDisposable
         var selectedColor = e.Value?.ToString();
         if (SKColor.TryParse(selectedColor, out SKColor color) && Session is not null)
         {
-            Session.TextileEditorViewContext.TextileEditorColorEventHandler.SetHandler<TextileColorClickEventHandler>().Color = color;
+            Session.TextileEditorViewContext.TextileEditorColorEventHandler.GetHandler<TextileColorFillEventHandler>().Color = color;
+            Session.TextileEditorViewContext.TextileEditorColorEventHandler.GetHandler<TextileColorClickEventHandler>().Color = color;
         }
 
     }

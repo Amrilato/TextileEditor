@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Localization;
 using System.Collections.Immutable;
 using System.Globalization;
+using TextileEditor.Web.Resources;
 
 namespace TextileEditor.Web.Services;
 

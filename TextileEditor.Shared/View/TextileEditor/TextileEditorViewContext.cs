@@ -104,6 +104,7 @@ file class InteractivePainter<TIndex, TValue, TSelector> : TextileEditorViewPain
             case nameof(ITextileEditorViewConfigure.AreaSelectBorderColor):
             case nameof(ITextileEditorViewConfigure.IntersectionColor):
             case nameof(ITextileEditorViewConfigure.PastPreviewIntersectionColor):
+                CancelCurrentCache();
                 TryInitializeWithLock(surfacePainter.SKImageInfo, new(false));
                 break;
             //case nameof(ITextileEditorViewConfigure.TieupPosition):
@@ -116,10 +117,14 @@ file class InteractivePainter<TIndex, TValue, TSelector> : TextileEditorViewPain
     private readonly IBindingTextileEditorViewContext<TIndex, TValue> parent;
     private readonly IDisposable disposable;
 
-    protected override void Paint(SKSurface surface, SKImageInfo info, SKImageInfo rawInfo, IProgress<Progress> progress)
+    protected override bool Paint(SKSurface surface, SKImageInfo info, SKImageInfo rawInfo, IProgress<Progress> progress)
     {
-        base.Paint(surface, info, rawInfo, progress);
-        progress.Report(parent.HandleRenderer.Render(surface, info, parent.Structure, TSelector.Select(parent.Structure), configure, progress, new() { MaxPhase = 1 }) with { Phase = 1 });
+        if (base.Paint(surface, info, rawInfo, progress))
+        {
+            progress.Report(parent.HandleRenderer.Render(surface, info, parent.Structure, TSelector.Select(parent.Structure), configure, progress, new() { MaxPhase = 1 }) with { Phase = 1 });
+            return true;
+        }
+        return false;
     }
 
     public void OnClick(SKPoint point) => parent.Bundle.Handler.OnClick(point, TSelector.Select(parent.Structure), parent.Structure, configure);

@@ -21,6 +21,8 @@ public class OldTextileSessionStorage(IWebStorage webStorage)
         {
             var name = await webStorage.GetItemAsync(GenerateKey(guid, "Name")) ?? "Failed load name…";
             var textile = (await webStorage.GetItemAsync(GenerateKey(guid, "TextileStructure"))).ToTextileStructure();
+            await webStorage.RemoveItemAsync(GenerateKey(guid, "Name"));
+            await webStorage.RemoveItemAsync(GenerateKey(guid, "TextileStructure"));
             return new() { Name = name, TextileStructure = textile, Guid = guid };
         }
         catch (Exception)
@@ -39,11 +41,16 @@ public class OldTextileSessionStorage(IWebStorage webStorage)
         {
             if (Guid.TryParse(rawGuid, out var guid))
             {
+                await webStorage.RemoveItemAsync(GenerateKey(guid, "BorderColor"));
+                await webStorage.RemoveItemAsync(GenerateKey(guid, "FillColor"));
+                await webStorage.RemoveItemAsync(GenerateKey(guid, "TieupPosition"));
+                await webStorage.RemoveItemAsync(GenerateKey(guid, "UseDefaultConfigure"));
                 var session = await GetSessionAsync(guid);
                 if (session is not null)
                     sessions.Add(session);
             }
         }
+        await webStorage.RemoveItemAsync(SessionListKey);
         return sessions;
     }
 }

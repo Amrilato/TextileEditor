@@ -1,13 +1,4 @@
 ﻿@page "/config"
+@using TextileEditor.Web.Components
 
-<FluentStack Orientation="Orientation.Vertical">
-    <FluentNumberField @bind-Value=ColumnWidth Label="Cell Width" />
-    <FluentNumberField @bind-Value=RowHeight Label="Cell Height" />
-    <FluentLabel>Border Color</FluentLabel>
-    <input id="borderColorPicker" type="color" @bind="BorderColor" />
-    <FluentLabel>Fill Color</FluentLabel>
-    <input id="fillColorPicker" type="color" @bind="FillColor" />
-    <FluentLabel>Paste Fill Color</FluentLabel>
-    <input id="pasteFillColorPicker" type="color" @bind="PasteFillColor" />
-    <FluentButton IconStart="@(new Icons.Regular.Size24.Save())" OnClick="AppSettings.SaveAsync">Save Config</FluentButton>
-</FluentStack>
+<EditorConfiguration />

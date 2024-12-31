@@ -1,0 +1,15 @@
+﻿@namespace TextileEditor.Web.Components
+@using TextileEditor.Web.Resources
+
+<FluentStack Orientation="Orientation.Vertical">
+    <FluentNumberField @bind-Value=ColumnWidth Label="@Localizer.GetString(SharedResource.CellWidth)" />
+    <FluentNumberField @bind-Value=RowHeight Label="@Localizer.GetString(SharedResource.CellHeight)" />
+    <FluentLabel>@Localizer.GetString(SharedResource.BorderColor)</FluentLabel>
+    <input id="borderColorPicker" type="color" @bind="BorderColor" />
+    <FluentLabel>@Localizer.GetString(SharedResource.IntersectionColor)</FluentLabel>
+    <input id="fillColorPicker" type="color" @bind="IntersectionColor" />
+    <FluentLabel>@Localizer.GetString(SharedResource.PasteIntersectionColor)</FluentLabel>
+    <input id="pasteFillColorPicker" type="color" @bind="PasteIntersectionColor" />
+    <FluentLabel>@Localizer.GetString(SharedResource.AreaSelectBorderColor)</FluentLabel>
+    <input id="areaSelectBorderColorPicker" type="color" @bind="AreaSelectBorderColor" />
+</FluentStack>

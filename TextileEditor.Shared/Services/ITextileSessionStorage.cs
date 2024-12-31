@@ -46,18 +46,37 @@ public static class ITextileSessionStorageExtensions
 
 public class TextileSession
 {
+    private readonly IAppSettings appSettings;
+    private readonly ITextileEditorViewRenderPipelineProvider textileEditorViewRenderPipelineProvider;
+    private readonly ITextilePreviewRenderPipelineProvider textilePreviewRenderPipelineProvider;
+
     internal TextileSession(TextileData textileData, IAppSettings appSettings, ITextileEditorViewRenderPipelineProvider textileEditorViewRenderPipelineProvider, ITextilePreviewRenderPipelineProvider textilePreviewRenderPipelineProvider)
     {
         TextileData = textileData ?? throw new ArgumentNullException(nameof(textileData));
+        this.appSettings = appSettings;
+        this.textileEditorViewRenderPipelineProvider = textileEditorViewRenderPipelineProvider;
+        this.textilePreviewRenderPipelineProvider = textilePreviewRenderPipelineProvider;
         Logger = new(textileData);
-        TextileEditorViewContext = new(textileData.TextileStructure, textileEditorViewRenderPipelineProvider, appSettings);
-        TextilePreviewContext = new(textilePreviewRenderPipelineProvider, textileData.TextileStructure, appSettings);
+        TextileEditorViewContext = default!;
+        TextilePreviewContext = default!;
     }
 
     public TextileData TextileData { get; }
     public TextileLogger Logger { get; }
-    public TextileEditorViewContext TextileEditorViewContext { get; }
-    public TextilePreviewContext TextilePreviewContext { get; }
+    public TextileEditorViewContext TextileEditorViewContext
+    {
+        get
+        {
+            return field ??= new(TextileData.TextileStructure, textileEditorViewRenderPipelineProvider, appSettings);
+        }
+    }
+    public TextilePreviewContext TextilePreviewContext
+    {
+        get
+        {
+            return field ??= new(textilePreviewRenderPipelineProvider, TextileData.TextileStructure, appSettings);
+        }
+    }
 }
 
 internal class TextileSessionStorage(IDataStorage dataStorage, IAppSettings appSettings, ITextileEditorViewRenderPipelineProvider textileEditorViewRenderPipelineProvider, ITextilePreviewRenderPipelineProvider textilePreviewRenderPipelineProvider) : ITextileSessionStorage

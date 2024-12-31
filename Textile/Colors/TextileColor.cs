@@ -7,7 +7,7 @@ public abstract class TextileColor(int length) : IObservableTextile<int, Color>,
 {
     private readonly Color[] Color = new Color[length];
     internal Span<Color> AsSpan() => Color;
-
+    public int Length => Color.Length;
     public Color this[int index]
     {
         get => Color[index];

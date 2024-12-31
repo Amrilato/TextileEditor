@@ -27,6 +27,7 @@ file class TextileRenderPipeline : ITextileEditorViewRenderPipeline<TextileIndex
 
     public async Task<Progress> RenderAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TextileIndex, bool> textile, ITextileEditorViewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
     {
+        progress.Report(currentProgress = currentProgress with { MaxPhase = currentProgress.MaxPhase + 2 });
         currentProgress = await SynchronizationTextileBorderRenderer<TextileIndex, bool>.Instance.RenderAsync(surface, info, structure, textile, configure, progress, currentProgress, token).ConfigureAwait(false);
         progress.Report(currentProgress = currentProgress with { Phase = currentProgress.Phase + 1 });
         currentProgress = await SynchronizationReadTextileColorTextileIntersectionRenderer.Instance.RenderAsync(surface, info, structure, textile, configure, progress, currentProgress, token);
@@ -35,6 +36,7 @@ file class TextileRenderPipeline : ITextileEditorViewRenderPipeline<TextileIndex
     }
     public async Task<Progress> UpdateDifferencesAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TextileIndex, bool> textile, ReadOnlyMemory<ChangedValue<TextileIndex, bool>> changedValues, ITextileEditorViewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
     {
+        progress.Report(currentProgress = currentProgress with { MaxPhase = currentProgress.MaxPhase + 1 });
         currentProgress = await SynchronizationReadTextileColorTextileIntersectionRenderer.Instance.UpdateDifferencesAsync(surface, info, structure, textile, changedValues, configure, progress, currentProgress, token);
         progress.Report(currentProgress = currentProgress with { Phase = currentProgress.Phase + 1 });
         return currentProgress;
@@ -50,6 +52,7 @@ file class TextileSettingRenderPipeline : ITextileEditorViewRenderPipeline<Texti
 
     public async Task<Progress> RenderAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TextileIndex, bool> textile, ITextileEditorViewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
     {
+        progress.Report(currentProgress = currentProgress with { MaxPhase = currentProgress.MaxPhase + 2 });
         currentProgress = await SynchronizationTextileBorderRenderer<TextileIndex, bool>.Instance.RenderAsync(surface, info, structure, textile, configure, progress, currentProgress, token).ConfigureAwait(false);
         progress.Report(currentProgress = currentProgress with { Phase = currentProgress.Phase + 1 });
         currentProgress = await SynchronizationTextileDataIntersectionRenderer.Instance.RenderAsync(surface, info, structure, textile, configure, progress, currentProgress, token);
@@ -59,6 +62,7 @@ file class TextileSettingRenderPipeline : ITextileEditorViewRenderPipeline<Texti
 
     public async Task<Progress> UpdateDifferencesAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<TextileIndex, bool> textile, ReadOnlyMemory<ChangedValue<TextileIndex, bool>> changedValues, ITextileEditorViewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
     {
+        progress.Report(currentProgress = currentProgress with { MaxPhase = currentProgress.MaxPhase + 1 });
         currentProgress = await SynchronizationTextileDataIntersectionRenderer.Instance.UpdateDifferencesAsync(surface, info, structure, textile, changedValues, configure, progress, currentProgress, token);
         progress.Report(currentProgress = currentProgress with { Phase = currentProgress.Phase + 1 });
         return currentProgress;
@@ -74,6 +78,7 @@ file class TextileColorRenderPipeline : ITextileEditorViewRenderPipeline<int, Co
 
     public async Task<Progress> RenderAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<int, Color> textile, ITextileEditorViewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
     {
+        progress.Report(currentProgress = currentProgress with { MaxPhase = currentProgress.MaxPhase + 2 });
         currentProgress = await SynchronizationTextileBorderRenderer<int, Color>.Instance.RenderAsync(surface, info, structure, textile, configure, progress, currentProgress, token).ConfigureAwait(false);
         progress.Report(currentProgress = currentProgress with { Phase = currentProgress.Phase + 1 });
         currentProgress = await SynchronizationTextileColorIntersectionRenderer.Instance.RenderAsync(surface, info, structure, textile, configure, progress, currentProgress, token);
@@ -83,6 +88,7 @@ file class TextileColorRenderPipeline : ITextileEditorViewRenderPipeline<int, Co
 
     public async Task<Progress> UpdateDifferencesAsync(SKSurface surface, SKImageInfo info, IReadOnlyTextileStructure structure, IReadOnlyTextile<int, Color> textile, ReadOnlyMemory<ChangedValue<int, Color>> changedValues, ITextileEditorViewConfigure configure, IProgress<Progress> progress, Progress currentProgress, CancellationToken token)
     {
+        progress.Report(currentProgress = currentProgress with { MaxPhase = currentProgress.MaxPhase + 1 });
         currentProgress = await SynchronizationTextileColorIntersectionRenderer.Instance.UpdateDifferencesAsync(surface, info, structure, textile, changedValues, configure, progress, currentProgress, token);
         progress.Report(currentProgress = currentProgress with { Phase = currentProgress.Phase + 1 });
         return currentProgress;

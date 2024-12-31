@@ -7,4 +7,5 @@ public interface IReadOnlyTextileColor : IReadOnlyTextile<int, Color>
 {
     int ToIndex(TextileIndex index);
     TextileIndex ToIndex(int accessorIndex, int nonAccessorIndex);
+    int Length { get; }
 }

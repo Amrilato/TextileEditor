@@ -2,6 +2,8 @@
 @using TextileEditor.Shared.Shared.Common
 @using TextileEditor.Shared.View.Common
 @using TextileEditor.Shared.View.TextileEditor.EventHandler
+@using TextileEditor.Web.Components
+@using TextileEditor.Web.Resources
 
 <FluentStack Style="height: 100%" Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Left" VerticalAlignment="VerticalAlignment.Top">
     @if (Session is not null)
@@ -11,8 +13,9 @@
             <FluentButton IconStart="@(new Icons.Regular.Size20.CopySelect())" Title="@Localizer.GetString(SharedResource.SelectCopyRange)" Disabled="@(Session is not null && Session.TextileEditorViewContext.TextileEditorEventHandler.Handler is TextileRangeSelectEventHandler)" OnClick="() => Session?.TextileEditorViewContext.TextileEditorEventHandler.SetHandler<TextileRangeSelectEventHandler>()" />
             <FluentButton IconStart="@(new Icons.Regular.Size20.ClipboardPaste())" Title="@Localizer.GetString(SharedResource.Paste)" Disabled="@(Session is not null && Session.TextileEditorViewContext.TextileEditorEventHandler.Handler is TextilePasteEventHandler)" OnClick="() => Session?.TextileEditorViewContext.TextileEditorEventHandler.SetHandler<TextilePasteEventHandler>()" />
             <FluentButton IconStart="@(new Icons.Regular.Size20.Eraser())" Title="@Localizer.GetString(SharedResource.ClearTextile)" Disabled="@(Session is not null && Session.TextileEditorViewContext.TextileEditorEventHandler.Handler is TextileClearEventHandler)" OnClick="() => Session?.TextileEditorViewContext.TextileEditorEventHandler.SetHandler<TextileClearEventHandler>()" />
-            <FluentDivider Role="DividerRole.Presentation" Orientation="Orientation.Vertical" />
+            <FluentDivider Role="DividerRole.Presentation" Orientation="Orientation.Vertical" />            
             <FluentButton IconStart="@(new Icons.Regular.Size20.Color())" Title="@Localizer.GetString(SharedResource.ClickToSetColor)" Disabled="@(Session is not null && Session.TextileEditorViewContext.TextileEditorColorEventHandler.Handler is TextileColorClickEventHandler)" OnClick="() => Session?.TextileEditorViewContext.TextileEditorColorEventHandler.SetHandler<TextileColorClickEventHandler>()" />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.ColorFill())" Title="@Localizer.GetString(SharedResource.ClickToFillColor)" Disabled="@(Session is not null && Session.TextileEditorViewContext.TextileEditorColorEventHandler.Handler is TextileColorFillEventHandler)" OnClick="() => Session?.TextileEditorViewContext.TextileEditorColorEventHandler.SetHandler<TextileColorFillEventHandler>()" />
             <input id="colorPicker" type="color" @onchange="OnColorChanged" />
             <FluentDivider />
             <FluentDivider Role="DividerRole.Presentation" Orientation="Orientation.Vertical" />
@@ -34,6 +37,8 @@
             <FluentButton IconStart="@(new Icons.Regular.Size20.DrawImage())" Title="@Localizer.GetString(SharedResource.BuildSettingsToTextile)" OnClick="BuildOtherToTextile" />
             <FluentButton IconStart="@(new Icons.Regular.Size20.DrawShape())" Title="@Localizer.GetString(SharedResource.BuildTextileToSettings)" OnClick="BuildTextileToOther" />
             <FluentButton IconStart="@(new Icons.Regular.Size20.SaveEdit())" Title="@Localizer.GetString(SharedResource.SaveLocalStorage)" OnClick="SaveSession" />
+            <FluentSpacer />
+            <FluentButton id="myPopoverButtonr" IconStart="@(new Icons.Regular.Size20.Settings())" Appearance="Appearance.Accent" @onclick="() => _visible = !_visible" />
         </FluentStack>
         <TextileEditor.Web.Components.TextileEditorView Context="Session?.TextileEditorViewContext" />
     }
@@ -44,3 +49,20 @@
         </FluentStack>
     }
 </FluentStack>
+
+<FluentPopover Style="width: 300px;" VerticalThreshold="270" AnchorId="myPopoverButtonr" @bind-Open="_visible">
+    <Header>
+        <FluentStack>
+            Editor Configuration
+            <FluentSpacer />
+            <FluentButton IconStart="@(new Icons.Regular.Size20.Save())" />
+        </FluentStack>
+    </Header>
+    <Body>
+        <EditorConfiguration />
+    </Body>
+</FluentPopover>
+
+@code {
+    bool _visible;
+}

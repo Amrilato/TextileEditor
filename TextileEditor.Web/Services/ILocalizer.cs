@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Globalization;
+using TextileEditor.Web.Resources;
 
 namespace TextileEditor.Web.Services
 {

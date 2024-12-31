@@ -1,4 +1,6 @@
-﻿public enum SharedResource
+﻿namespace TextileEditor.Web.Resources;
+
+public enum SharedResource
 {
     Color,
     Mode,
@@ -41,6 +43,7 @@
     Copy,
     ClearTextile,
     ClickToSetColor,
+    ClickToFillColor,
     Redo,
     Undo,
     BuildSettingsToTextile,
@@ -50,5 +53,11 @@
     SelectAVerticalRepeat,
     SelectAPixelWidth,
     SelectAPixelHeight,
-    Home
+    Home,
+    BorderColor,
+    IntersectionColor,
+    PasteIntersectionColor,
+    AreaSelectBorderColor,
+    CellWidth,
+    CellHeight
 }
