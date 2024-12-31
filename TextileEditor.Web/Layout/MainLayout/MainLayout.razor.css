@@ -81,3 +81,25 @@
     height: 1px;
     background-color: var(--accent-fill-rest);
 }
+
+.github-link {
+    color: var(--neutral-fill-inverse-rest); /* リンクテキストを黒に設定 */
+    text-decoration: none;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+.github-icon {
+    margin-right: 8px;
+    filter: grayscale(100%); /* アイコンを白黒に設定 */
+    transition: filter 0.3s ease, color 0.3s ease; /* ホバー時のスムーズな変化 */
+}
+
+.github-link:hover {
+    color: var(--accent-fill-rest); /* ホバー時にリンクテキストをグレーに変更 */
+}
+
+    .github-link:hover .github-icon {
+        filter: none; /* ホバー時に白黒を解除 */
+    }
