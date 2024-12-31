@@ -21,4 +21,11 @@ public static class ServiceCollectionExtensions
 
         return serviceDescriptors;
     }
+    public static async Task<IServiceProvider> InitializeAsync(this IServiceProvider serviceProvider)
+    {
+        var settings = serviceProvider.GetService<IAppSettings>();
+        if (settings is LazyAppSettings lazy)
+            await lazy.InitializeAsync();
+        return serviceProvider;
+    }
 }

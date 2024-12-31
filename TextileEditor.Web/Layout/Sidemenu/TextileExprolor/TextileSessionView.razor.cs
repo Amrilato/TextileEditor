@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using R3;
+using Microsoft.AspNetCore.Components;
 using System.Diagnostics.CodeAnalysis;
 using TextileEditor.Shared.Services;
 using TextileEditor.Web.Services;
 
 namespace TextileEditor.Web.Layout;
 
-public partial class TextileSessionView
+public partial class TextileSessionView : IDisposable
 {
     [Inject]
     public required ILocalizer Localizer { get; init; }
@@ -15,6 +16,14 @@ public partial class TextileSessionView
     public TextileSession? Session { get; set; }
     [Parameter]
     public ITextileSessionManager? SessionManager { get; set; }
+
+    private IDisposable? disposable;
+    protected override void OnParametersSet()
+    {
+        disposable?.Dispose();
+        disposable = Localizer.ChangeCulture.Subscribe(c => StateHasChanged());
+    }
+
 
     private bool renaming = false;
     private string SessionName
@@ -42,5 +51,11 @@ public partial class TextileSessionView
     {
         if (Check)
             await SessionManager.UpdateSessionAsync(Session);
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        disposable?.Dispose();
     }
 }

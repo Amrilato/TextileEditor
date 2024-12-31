@@ -1,16 +1,24 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using R3;
+using Microsoft.AspNetCore.Components;
 using SkiaSharp;
 using TextileEditor.Shared.Services;
 using TextileEditor.Web.Services;
 
 namespace TextileEditor.Web.Components;
 
-public partial class EditorConfiguration
+public partial class EditorConfiguration : IDisposable
 {
     [Inject]
     public required ILocalizer Localizer { get; init; }
     [Inject]
     public required IAppSettings AppSettings { get; init; }
+
+    private IDisposable? disposable;
+    protected override void OnParametersSet()
+    {
+        disposable?.Dispose();
+        disposable = Localizer.ChangeCulture.Subscribe(c => StateHasChanged());
+    }
 
     public int ColumnWidth
     {
@@ -65,6 +73,12 @@ public partial class EditorConfiguration
             else
                 throw new ArgumentException(nameof(value));
         }
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        disposable?.Dispose();
     }
 }
 

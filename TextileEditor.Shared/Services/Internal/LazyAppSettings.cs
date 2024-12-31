@@ -21,7 +21,7 @@ internal class LazyAppSettings(IDataStorage dataStorage) : IAppSettings
             return Default;
         }
     }
-    private readonly Task<AppSettings> loadTask = LoadAsync(dataStorage);
+    private Task<AppSettings>? loadTask = LoadAsync(dataStorage);
     private static AppSettings Default => new() { GridSize = new(1, 20, 20), BorderColor = SKColors.Black, IntersectionColor = SKColors.Blue, PixelSize = new(2, 2), RepeatHorizontal = 5, RepeatVertical = 5 };
     private const string AppSettingKey = nameof(AppSettings);
     private AppSettings? appSettings;
@@ -32,29 +32,33 @@ internal class LazyAppSettings(IDataStorage dataStorage) : IAppSettings
             if (appSettings is not null)
                 return appSettings;
             else if(loadTask is not null)
-            {
-                loadTask.ContinueWith(s =>
-                {
-                    if (appSettings is null)
-                    {
-                        appSettings = s.Result;
-                        return;
-                    }
-                    var setting = s.Result;
-                    appSettings.GridSize = setting.GridSize;
-                    appSettings.BorderColor = setting.BorderColor;
-                    appSettings.AreaSelectBorderColor = setting.AreaSelectBorderColor;
-                    appSettings.IntersectionColor = setting.IntersectionColor;
-                    appSettings.PastPreviewIntersectionColor = setting.IntersectionColor;
-                    appSettings.PastPreviewIntersectionColor = setting.PastPreviewIntersectionColor;
-                    appSettings.TieupPosition = setting.TieupPosition;
-                    appSettings.RepeatVertical = setting.RepeatVertical;
-                    appSettings.RepeatHorizontal = setting.RepeatHorizontal;
-                    appSettings.PixelSize = setting.PixelSize;
-                }, TaskContinuationOptions.OnlyOnRanToCompletion);
-            }
+                Initialize(loadTask);
             return appSettings = Default;
         }
+    }
+
+    private void Initialize(Task<AppSettings> loadTask)
+    {
+        loadTask.ContinueWith(s =>
+        {
+            if (appSettings is null)
+            {
+                appSettings = s.Result;
+                return;
+            }
+            var setting = s.Result;
+            appSettings.GridSize = setting.GridSize;
+            appSettings.BorderColor = setting.BorderColor;
+            appSettings.AreaSelectBorderColor = setting.AreaSelectBorderColor;
+            appSettings.IntersectionColor = setting.IntersectionColor;
+            appSettings.PastPreviewIntersectionColor = setting.IntersectionColor;
+            appSettings.PastPreviewIntersectionColor = setting.PastPreviewIntersectionColor;
+            appSettings.TieupPosition = setting.TieupPosition;
+            appSettings.RepeatVertical = setting.RepeatVertical;
+            appSettings.RepeatHorizontal = setting.RepeatHorizontal;
+            appSettings.PixelSize = setting.PixelSize;
+        }, TaskContinuationOptions.OnlyOnRanToCompletion);
+        this.loadTask = null;
     }
 
     public GridSize GridSize { get => AppSettings.GridSize; set => AppSettings.GridSize = value; }
@@ -75,6 +79,18 @@ internal class LazyAppSettings(IDataStorage dataStorage) : IAppSettings
         AppSettingsSerializer.Serialize(AppSettings, buffer);
         using var data = buffer.DetachBuffer();
         await dataStorage.SaveAsync(AppSettingKey, data.Span);
+    }
+
+    internal Task InitializeAsync()
+    {
+        if (loadTask is not null)
+        {
+            var l = loadTask;
+            Initialize(loadTask);
+            return l;
+        }
+        else
+            return Task.CompletedTask;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged

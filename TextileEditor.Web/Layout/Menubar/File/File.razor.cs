@@ -1,4 +1,5 @@
-﻿using DotNext.Buffers;
+﻿using R3;
+using DotNext.Buffers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using System.Buffers;
@@ -9,7 +10,7 @@ using TextileEditor.Web.Services;
 
 namespace TextileEditor.Web.Layout;
 
-public partial class File
+public partial class File : IDisposable
 {
     private FluentInputFile? FileUploader = default!;
     private bool open = false;
@@ -34,6 +35,14 @@ public partial class File
 
     [Inject]
     public required IAppSettings AppSettings { get; init; }
+
+    private IDisposable? disposable;
+    protected override void OnParametersSet()
+    {
+        disposable?.Dispose();
+        disposable = Localizer.ChangeCulture.Subscribe(c => StateHasChanged());
+    }
+
 
     private SaveAsDialogContent SaveAsDialogContent { get; } = new();
     private async Task OpenDialogAsync()
@@ -152,5 +161,11 @@ public partial class File
                 options.OnClose = e => FileDownloadService.RemoveItemAsync(href).AsTask();
             });
         }
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        disposable?.Dispose();
     }
 }

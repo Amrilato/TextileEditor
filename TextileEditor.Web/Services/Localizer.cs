@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Localization;
+using R3;
 using System.Collections.Immutable;
 using System.Globalization;
 using TextileEditor.Web.Resources;
@@ -29,10 +30,12 @@ public class Localizer(IWebStorage webStorage, IStringLocalizer<SharedResource> 
         if (CultureInfo.DefaultThreadCurrentCulture != culture)
         {
             CultureInfo.DefaultThreadCurrentCulture = culture;
-            ChangeCulture?.Invoke(culture);
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            changeCulture.OnNext(culture);
         }
         await webStorage.SetItemAsync(BlazorCulture, culture.Name);
     }
     public string GetString(SharedResource key) => stringLocalizer[key.ToString()];
-    public event Action<CultureInfo>? ChangeCulture;
+    public Observable<CultureInfo> ChangeCulture => changeCulture;
+    private readonly Subject<CultureInfo> changeCulture = new();
 }

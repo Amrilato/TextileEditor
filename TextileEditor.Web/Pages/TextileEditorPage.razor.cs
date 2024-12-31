@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using R3;
+using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using SkiaSharp;
 using TextileEditor.Shared.Services;
@@ -26,6 +27,14 @@ public partial class TextileEditorPage : IDisposable
 
     [CascadingParameter(Name = CascadingParameterNames.Session)]
     public TextileSession? Session { get; set; }
+
+
+    private IDisposable? disposable;
+    protected override void OnParametersSet()
+    {
+        disposable?.Dispose();
+        disposable = Localizer.ChangeCulture.Subscribe(c => StateHasChanged());
+    }
 
     private void OnColorChanged(ChangeEventArgs e)
     {
@@ -101,6 +110,7 @@ public partial class TextileEditorPage : IDisposable
     public void Dispose()
     {
         GC.SuppressFinalize(this);
+        disposable?.Dispose();
 
         if (watchSession is not null)
             watchSession.Logger.LoggerStateChanged -= Logger_LoggerStateChanged;

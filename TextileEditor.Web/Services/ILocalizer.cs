@@ -1,17 +1,17 @@
-﻿using System.Collections.Immutable;
+﻿using R3;
+using System.Collections.Immutable;
 using System.Globalization;
 using TextileEditor.Web.Resources;
 
-namespace TextileEditor.Web.Services
+namespace TextileEditor.Web.Services;
+
+public interface ILocalizer
 {
-    public interface ILocalizer
-    {
-        ImmutableArray<CultureInfo> SupportedLanguages { get; }
+    ImmutableArray<CultureInfo> SupportedLanguages { get; }
 
-        event Action<CultureInfo>? ChangeCulture;
 
-        ValueTask<CultureInfo> GetCulture();
-        string GetString(SharedResource key);
-        ValueTask SetCulture(CultureInfo culture);
-    }
+    ValueTask<CultureInfo> GetCulture();
+    string GetString(SharedResource key);
+    ValueTask SetCulture(CultureInfo culture);
+    Observable<CultureInfo> ChangeCulture { get; }
 }

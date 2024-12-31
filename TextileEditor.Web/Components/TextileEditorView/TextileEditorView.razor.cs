@@ -16,6 +16,8 @@ public partial class TextileEditorView : ComponentBase, IDisposable
     public TextileEditorViewContext? Context { get; set; }
     [Inject]
     public required IAppSettings AppSettings { get; init; }
+
+    private IDisposable? disposableLocalizer;
     private IDisposable? disposable;
     protected override void OnParametersSet()
     {
@@ -38,6 +40,9 @@ public partial class TextileEditorView : ComponentBase, IDisposable
                         await InvokeAsync(StateHasChanged);
                     }
                 }, AwaitOperation.Sequential);
+
+        disposableLocalizer?.Dispose();
+        disposableLocalizer = Localizer.ChangeCulture.Subscribe(c => StateHasChanged());
     }
     [MemberNotNullWhen(true, nameof(Context))]
     private bool AlreadyRender => Context is not null
@@ -53,5 +58,6 @@ public partial class TextileEditorView : ComponentBase, IDisposable
     {
         GC.SuppressFinalize(this);
         disposable?.Dispose();
+        disposableLocalizer?.Dispose();
     }
 }
